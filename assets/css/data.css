@@ -1,0 +1,38 @@
+body {
+    background-color: #ffffff;
+    font-family: "Microsoft YaHei", sans-serif;
+    font-size: 18px;
+    line-height: 1.8;
+    padding: 20px;
+}
+.title {
+    color: #ffa500;
+    text-align: center;
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+.red { color: #ff3333; }
+.green { color: #33ff33; }
+.cyan { color: #33ffff; }
+.blue { color: #3366ff; }
+.purple { color: #cc66ff; }
+.yellow { color: #ffcc00; }
+.orange { color: #ff9933; }
+.gray { color: #999999; }
+.white { color: #ffffff; }
+.highlight-green {
+    background-color: #446644;
+    color: #ccffcc;
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+.links {
+    margin-top: 20px;
+}
+.links a {
+    color: #33ffff;
+    text-decoration: none;
+}
+.links a:hover {
+    text-decoration: underline;
+}

@@ -1,0 +1,109 @@
+/* WAP西游记2012 - 全局暗色主题（智能颜色翻转） */
+
+/* 基础页面翻转 */
+body {
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+}
+
+/* 所有段落和文本元素默认为白色 */
+p, span, div, li, td, th, h1, h2, h3, h4, h5, h6 {
+    color: #ffffff;
+}
+
+hr{
+    width: 30%;
+    margin-left: 0;
+}
+
+/* 排除登录/注册/角色选择页面的特殊样式 */
+/* 这些页面有自己的颜色设计，保持不变 */
+.container p,
+.container h1,
+.poem,
+.login-title,
+.character-name,
+.character-info,
+.error,
+.alert,
+.form-group label,
+.gift-info p,
+.role-limit-info p {
+    /* 不设置color，保持原样 */
+}
+
+
+/* 保持链接颜色可见 */
+a {
+    color: #66b3ff;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #99ccff;
+}
+
+/* footer.css 中 .back-link a 使用 #0000FF，在特定度上覆盖了上面的全局 a 规则，
+   导致暗色模式下"退出 | 刷新 | 管理"等返回链接仍为深蓝、与主题不协调。
+   此处用 !important 提升优先级，确保暗色模式统一为浅蓝。 */
+.back-link a {
+    color: #66b3ff !important;
+    text-decoration: none;
+}
+
+.back-link a:hover {
+    color: #99ccff !important;
+    text-decoration: underline;
+}
+
+/* 表单元素适配暗色背景 */
+input[type="text"],
+input[type="password"],
+select,
+textarea {
+    background-color: #2d2d2d !important;
+    color: #ffffff !important;
+    border: 1px solid #444444;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+select:focus,
+textarea:focus {
+    border-color: #66b3ff;
+    outline: none;
+}
+
+/* 按钮样式 */
+button {
+    background-color: #333333 !important;
+    color: #ffffff !important;
+    border: 1px solid #555555;
+}
+
+button:hover {
+    background-color: #444444 !important;
+}
+
+/* 聊天消息容器 */
+div[style*="border: 1px solid #ccc"] {
+    border-color: #444444 !important;
+    background-color: #2d2d2d !important;
+}
+
+/* 分页导航背景 */
+div[style*="background: #f5f5f5"] {
+    background-color: #2d2d2d !important;
+}
+
+/* 时间戳颜色调整（稍微亮一点以便在深色背景上可见） */
+span[style*="color: #999"] {
+    color: #aaaaaa !important;
+}
+
+/* 保护已有inline style的元素不被覆盖 */
+/* 这些元素已经有特殊颜色设置，保持不变 */
+span[style*="color:"],
+span[style*="COLOR:"] {
+    /* 不设置color，保持原样 */
+}

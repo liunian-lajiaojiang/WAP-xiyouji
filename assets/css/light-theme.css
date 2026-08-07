@@ -1,0 +1,588 @@
+/* WAP西游记2012 - 默认主题（亮色） */
+/* 提供标准网页亮色外观，覆盖各页面暗色样式 */
+/* 切换到暗色主题时，此文件被 dark-theme.css 替换 */
+
+/* 基础页面 - 亮色外观 */
+body {
+    background-color: #f5f5f5 !important;
+    color: #333333 !important;
+}
+
+p, span, div, li, td, th, h1, h2, h3, h4, h5, h6 {
+    color: #333333;
+}
+
+/* 链接无下划线 */
+a {
+    color: #0000FF !important;
+    text-decoration: none !important;
+}
+
+a:hover {
+    color: #1558b0 !important;
+}
+
+hr{
+    width: 30%;
+    margin-left: 0;
+}
+
+/* 表单元素 */
+input[type="text"],
+input[type="password"],
+input[type="number"],
+select,
+textarea {
+    background-color: #ffffff !important;
+    color: #333333 !important;
+    border: 1px solid #cccccc;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #1a73e8;
+    outline: none;
+}
+
+/* 按钮 */
+button {
+    background-color: #e8e8e8 !important;
+    color: #333333 !important;
+    border: 1px solid #bbbbbb;
+}
+
+button:hover {
+    background-color: #d0d0d0 !important;
+}
+
+/* ===== 亮色背景下的颜色类适配 ===== */
+.title {
+    color: #cc7000 !important;
+}
+
+.red {
+    color: #cc0000 !important;
+}
+
+.green {
+    color: #008800 !important;
+}
+
+.cyan {
+    color: #006666 !important;
+}
+
+.blue {
+    color: #1a73e8 !important;
+}
+
+.purple {
+    color: #6633cc !important;
+}
+
+.yellow {
+    color: #b8860b !important;
+}
+
+.orange {
+    color: #cc5500 !important;
+}
+
+.brown {
+    color: #8b4513 !important;
+}
+
+.gray {
+    color: #666666 !important;
+}
+
+.white {
+    color: #333333 !important;
+}
+
+.highlight-green {
+    background-color: #d4edda !important;
+    color: #155724 !important;
+}
+
+/* data.php 底部链接区 */
+.links a {
+    color: #1a73e8 !important;
+}
+
+/* ===== skills.css 暗色子元素覆盖 ===== */
+/* skills.css 全篇暗色设计，技能激发/练功页面需要亮色覆盖 */
+.skill-page {
+    background-color: #ffffff !important;
+    border-color: #cccccc !important;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15) !important;
+}
+
+.skill-page h4 {
+    color: #008800 !important;
+    border-bottom-color: #cccccc !important;
+}
+
+.skill-table th {
+    color: #666666 !important;
+    border-bottom-color: #cccccc !important;
+}
+
+.skill-table td {
+    color: #333333 !important;
+}
+
+.skill-table tr:hover td {
+    background-color: #f0f0f0 !important;
+}
+
+.btn-back {
+    background-color: #e8e8e8 !important;
+    color: #333333 !important;
+    border: 1px solid #bbbbbb !important;
+}
+
+.btn-back:hover {
+    background-color: #d0d0d0 !important;
+}
+
+.no-data {
+    color: #666666 !important;
+}
+
+.skill-name {
+    color: #333333 !important;
+}
+
+.skill-id {
+    color: #888888 !important;
+}
+
+.lv {
+    color: #cc7000 !important;
+}
+
+.info-bar {
+    background-color: #f0f0f0 !important;
+    border-color: #cccccc !important;
+    color: #333333 !important;
+}
+
+.info-bar strong {
+    color: #1a73e8 !important;
+}
+
+/* ===== room.css 暗色子元素覆盖 ===== */
+/* room.css 内部容器、按钮等使用暗色背景，需要覆盖为亮色 */
+#room-msg-log,
+.room-msg-log {
+    background-color: #f0f0f0 !important;
+}
+
+.room-nav,
+.room-actions,
+.room-buttons {
+    background-color: #e8e8e8 !important;
+}
+
+.exercise-modal-btn.secondary,
+.meditate-modal-btn.secondary {
+    background-color: #e0e0e0 !important;
+    color: #333333 !important;
+}
+
+/* ===== 所有弹窗容器 - 亮色覆盖 ===== */
+/* modal.css 中所有弹窗都是暗色设计（#2d2d2d 背景），亮色主题下需要改为白底 */
+.exert-modal,
+.practice-modal,
+.exercise-modal,
+.meditate-modal,
+.teleport-modal,
+.exam-modal {
+    background-color: #ffffff !important;
+    border-color: #cccccc !important;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* 弹窗标题 - 从金色改为深橙 */
+.exert-modal h3,
+.practice-modal h3,
+.exercise-modal h3,
+.meditate-modal h3,
+.teleport-modal h3,
+.exam-modal h3 {
+    color: #cc7000 !important;
+}
+
+/* 弹窗描述文字 */
+.exert-modal-desc,
+.practice-modal-desc,
+.exercise-modal-desc,
+.meditate-modal-desc,
+.teleport-modal-desc {
+    color: #666666 !important;
+}
+
+/* 弹窗标签文字（如"消耗精神"等） */
+.exercise-input-group label,
+.meditate-input-group label {
+    color: #006666 !important;
+}
+
+/* 弹窗提示文字 */
+.exercise-modal-tips,
+.meditate-modal-tips,
+.exert-loading,
+.practice-loading {
+    color: #cc5500 !important;
+}
+
+/* 弹窗输入框 */
+.exercise-input-group input,
+.meditate-input-group input {
+    background-color: #f5f5f5 !important;
+    color: #333333 !important;
+    border-color: #cccccc !important;
+}
+
+/* 弹窗按钮 - 主题色 */
+.exercise-modal-btn.primary,
+.meditate-modal-btn.primary,
+.exam-modal-btn.primary {
+    background-color: #1a73e8 !important;
+    color: #ffffff !important;
+    border: none !important;
+}
+
+.exercise-modal-btn.primary:hover,
+.meditate-modal-btn.primary:hover,
+.exam-modal-btn.primary:hover {
+    background-color: #1558b0 !important;
+}
+
+.exercise-modal-btn.secondary,
+.meditate-modal-btn.secondary,
+.exam-modal-btn.secondary,
+.exert-modal-close,
+.practice-modal-close,
+.teleport-modal-close {
+    background-color: #e0e0e0 !important;
+    color: #333333 !important;
+    border: none !important;
+}
+
+.exercise-modal-btn.secondary:hover,
+.meditate-modal-btn.secondary:hover,
+.exam-modal-btn.secondary:hover,
+.exert-modal-close:hover,
+.practice-modal-close:hover,
+.teleport-modal-close:hover {
+    background-color: #d0d0d0 !important;
+}
+
+/* 运功弹窗技能按钮 */
+.exert-type-btn {
+    background-color: #f0f0f0 !important;
+    border-color: #dddddd !important;
+    color: #333333 !important;
+}
+
+.exert-type-btn:hover {
+    background-color: #e0e8f0 !important;
+    border-color: #aabbcc !important;
+}
+
+.exert-type-btn .name {
+    color: #008800 !important;
+}
+
+.exert-type-btn .desc {
+    color: #666666 !important;
+}
+
+.exert-type-btn .cost {
+    color: #cc5500 !important;
+}
+
+.exert-type-btn .require {
+    color: #cc0000 !important;
+}
+
+/* 练功弹窗 */
+.practice-info {
+    background-color: #e8f0e8 !important;
+    border-color: #4a8a4a !important;
+    color: #333333 !important;
+}
+
+.practice-table th {
+    color: #008800 !important;
+    border-bottom-color: #cccccc !important;
+}
+
+.practice-table td {
+    color: #333333 !important;
+    border-bottom-color: #dddddd !important;
+}
+
+.practice-table tr:hover td {
+    background-color: #f0f0f0 !important;
+}
+
+.practice-table .skill-name {
+    color: #cc7000 !important;
+}
+
+.practice-btn {
+    background-color: #e0f0e0 !important;
+    border-color: #4a8a4a !important;
+    color: #008800 !important;
+}
+
+.practice-btn:hover {
+    background-color: #d0e8d0 !important;
+    color: #155724 !important;
+}
+
+.practice-btn.disabled {
+    background-color: #e0e0e0 !important;
+    border-color: #cccccc !important;
+    color: #999999 !important;
+}
+
+/* 传送弹窗 */
+.teleport-btn {
+    background-color: #f0f0f0 !important;
+    border-color: #cccccc !important;
+    color: #333333 !important;
+}
+
+.teleport-btn:hover {
+    background-color: #e0e8f0 !important;
+    border-color: #aabbcc !important;
+}
+
+.teleport-btn.primary {
+    background-color: #e0f0e0 !important;
+    border-color: #4a8a4a !important;
+    color: #008800 !important;
+}
+
+.teleport-btn.primary:hover {
+    background-color: #d0e8d0 !important;
+    border-color: #6aaa6a !important;
+}
+
+.teleport-btn.danger {
+    background-color: #f0e0e0 !important;
+    border-color: #aa4a4a !important;
+    color: #cc0000 !important;
+}
+
+.teleport-btn.danger:hover {
+    background-color: #e8d0d0 !important;
+}
+
+.teleport-btn.danger.active-mode {
+    background-color: #cc4444 !important;
+    border-color: #ee6666 !important;
+    color: #ffffff !important;
+}
+
+.teleport-slot.empty {
+    background-color: #f5f5f5 !important;
+    border-color: #cccccc !important;
+    color: #999999 !important;
+}
+
+.teleport-slot.empty:hover {
+    border-color: #aaaaaa !important;
+    color: #666666 !important;
+    background-color: #eeeeee !important;
+}
+
+.teleport-slot.filled {
+    background-color: #e0f0e0 !important;
+    border-color: #4a8a4a !important;
+}
+
+.teleport-slot.filled:hover {
+    background-color: #d0e8d0 !important;
+    border-color: #6aaa6a !important;
+}
+
+.teleport-slot .slot-name {
+    color: #008800 !important;
+}
+
+.teleport-slot .slot-plus {
+    color: #aaaaaa !important;
+}
+
+.teleport-slot.forget-mode.filled {
+    border-color: #aa4a4a !important;
+    background-color: #f0e0e0 !important;
+}
+
+.teleport-slot.forget-mode.filled:hover {
+    background-color: #e8d0d0 !important;
+    border-color: #cc4444 !important;
+}
+
+.teleport-slot .slot-x {
+    color: #cc0000 !important;
+}
+
+.teleport-slot.forget-mode .slot-name-dimmer {
+    color: #cc0000 !important;
+}
+
+/* 科举弹窗 */
+.exam-question {
+    background-color: #f5f5f5 !important;
+    border-color: #cccccc !important;
+}
+
+.exam-question-number {
+    color: #cc7000 !important;
+}
+
+.exam-question-text {
+    color: #333333 !important;
+}
+
+.exam-option {
+    color: #555555 !important;
+}
+
+.exam-option span {
+    color: #008800 !important;
+}
+
+/* 成功/错误提示 */
+.exert-success,
+.practice-modal .success-text {
+    color: #008800 !important;
+}
+
+.exert-error {
+    color: #cc0000 !important;
+}
+
+/* ===== chat.css 暗色子元素覆盖（聊天区特殊处理：浅黑面板） ===== */
+/* 聊天区在亮色主题下采用浅黑面板，与亮色页面区分，形成独立聊天窗口 */
+.ws-status {
+    background: rgba(255, 255, 255, 0.12) !important;
+    color: #cccccc !important;
+}
+
+.chat-filter-bar {
+    background: #2d2d2d !important;
+    border: 1px solid #444444 !important;
+    border-radius: 4px !important;
+    padding: 6px !important;
+}
+
+.chat-filter-btn {
+    background: transparent !important;
+    border-color: #555555 !important;
+    color: #aaaaaa !important;
+}
+
+.chat-filter-btn:hover {
+    border-color: #888888 !important;
+    color: #dddddd !important;
+}
+
+.chat-filter-btn.active {
+    background: #333333 !important;
+    border-color: #ffcc00 !important;
+    color: #ffcc00 !important;
+}
+
+.chat-container {
+    background-color: #2d2d2d !important;
+    border-color: #444444 !important;
+    color: #e0e0e0 !important;
+}
+
+.chat-empty {
+    color: #888888 !important;
+}
+
+.chat-timestamp {
+    color: #aaaaaa !important;
+}
+
+.chat-msg-count {
+    color: #888888 !important;
+}
+
+.chat-msg-item {
+    color: #e0e0e0 !important;
+}
+
+.emote-trigger-btn {
+    background: transparent !important;
+    border-color: #555555 !important;
+    color: #dddddd !important;
+}
+
+.emote-trigger-btn:hover {
+    border-color: #d4a017 !important;
+    background: rgba(212, 160, 23, 0.1) !important;
+}
+
+.emote-panel {
+    background: #2d2d2d !important;
+    border-color: #444444 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+.emote-tab {
+    border-color: #444444 !important;
+    color: #aaaaaa !important;
+}
+
+.emote-tab:hover {
+    border-color: #d4a017 !important;
+    color: #d4a017 !important;
+}
+
+.emote-item {
+    background: #1f1f1f !important;
+    border-color: #333333 !important;
+    color: #cccccc !important;
+}
+
+.emote-item:hover {
+    border-color: #d4a017 !important;
+    background: rgba(212, 160, 23, 0.1) !important;
+    color: #ffffff !important;
+}
+
+.emote-item .emote-cmd {
+    color: #888888 !important;
+}
+
+/* 排除登录/注册/角色选择页面的特殊样式 */
+.container p,
+.container h1,
+.poem,
+.login-title,
+.character-name,
+.character-info,
+.error,
+.alert,
+.form-group label,
+.gift-info p,
+.role-limit-info p {
+    /* 不设置color，保持原样 */
+}
+
+/* 保护已有inline style的元素不被覆盖 */
+span[style*="color:"],
+span[style*="COLOR:"] {
+    /* 不设置color，保持原样 */
+}

@@ -1,0 +1,245 @@
+#shibing {
+    font-size: 16px;
+    color: #F00;
+    font-weight: 900;
+}
+
+@keyframes chatFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#room-msg-log { 
+    font-size: 14px; 
+    line-height: 1.6; 
+    margin-top: 8px; 
+}
+.room-msg { 
+    margin-bottom: 2px; 
+    word-break: break-all; 
+}
+.room-msg-private {
+    padding: 2px 4px;
+    margin-bottom: 2px;
+    word-break: break-all;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.3; }
+}
+
+.exert-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+}
+
+.exert-modal-overlay.active {
+    display: flex;
+}
+
+.exert-modal {
+    background: #2d2d2d;
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 500px;
+    width: 90%;
+    color: #fff;
+    position: relative;
+}
+
+.exert-modal h3 {
+    margin: 0 0 15px 0;
+    color: #ffd700;
+    text-align: center;
+}
+
+.exert-modal-desc {
+    text-align: center;
+    color: #888;
+    margin-bottom: 15px;
+}
+
+.exert-type-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.exert-type-btn {
+    background: #3a3a3a;
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.exert-type-btn:hover {
+    background: #4a4a4a;
+    border-color: #ffd700;
+}
+
+.exert-type-btn .name {
+    font-weight: bold;
+    color: #ffd700;
+    margin-bottom: 4px;
+}
+
+.exert-type-btn .desc {
+    font-size: 12px;
+    color: #aaa;
+    margin-bottom: 4px;
+}
+
+.exert-type-btn .cost {
+    font-size: 11px;
+    color: #888;
+}
+
+.exert-type-btn .require {
+    font-size: 10px;
+    color: #ff6666;
+    margin-top: 4px;
+}
+
+.exert-modal-close {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background: #555;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.exert-modal-close:hover {
+    background: #666;
+}
+
+.exert-loading {
+    text-align: center;
+    padding: 40px;
+    color: #ffd700;
+}
+
+.exercise-modal-overlay,
+.meditate-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+}
+
+.exercise-modal-overlay.active,
+.meditate-modal-overlay.active {
+    display: flex;
+}
+
+.exercise-modal,
+.meditate-modal {
+    background: #2d2d2d;
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 400px;
+    width: 90%;
+    color: #fff;
+}
+
+.exercise-modal h3,
+.meditate-modal h3 {
+    margin: 0 0 10px 0;
+    color: #ffd700;
+    text-align: center;
+}
+
+.exercise-modal-desc,
+.meditate-modal-desc {
+    text-align: center;
+    color: #888;
+    margin-bottom: 15px;
+}
+
+.exercise-input-group,
+.meditate-input-group {
+    margin-bottom: 15px;
+}
+
+.exercise-input-group label,
+.meditate-input-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #aaa;
+}
+
+.exercise-input-group input,
+.meditate-input-group input {
+    width: 100%;
+    padding: 10px;
+    background: #1a1a1a;
+    border: 1px solid #555;
+    border-radius: 5px;
+    color: #fff;
+}
+
+.exercise-modal-tips,
+.meditate-modal-tips {
+    text-align: center;
+    color: #888;
+    font-size: 12px;
+    margin-bottom: 15px;
+}
+
+.exercise-modal-buttons,
+.meditate-modal-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.exercise-modal-btn,
+.meditate-modal-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.exercise-modal-btn.primary,
+.meditate-modal-btn.primary {
+    background: #4CAF50;
+    color: #fff;
+}
+
+.exercise-modal-btn.secondary,
+.meditate-modal-btn.secondary {
+    background: #555;
+    color: #fff;
+}
+
+.exercise-modal-btn.primary:hover,
+.meditate-modal-btn.primary:hover {
+    background: #45a049;
+}
+
+.exercise-modal-btn.secondary:hover,
+.meditate-modal-btn.secondary:hover {
+    background: #666;
+}

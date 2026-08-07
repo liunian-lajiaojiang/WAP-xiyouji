@@ -1,0 +1,61 @@
+.shop-hint {
+    color: #aaa;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.shop-table {
+    width: 70%;
+    border-collapse: collapse;
+}
+
+.shop-table thead tr {
+    border-bottom: 1px solid #333;
+}
+
+.shop-table th {
+    text-align: left;
+    padding: 8px;
+}
+
+.shop-table tbody tr {
+    border-bottom: 1px solid #222;
+}
+
+.shop-table td {
+    padding: 8px;
+}
+
+.shop-table td.item-desc {
+    color: #aaa;
+    font-size: 12px;
+}
+
+.shop-table td.item-amount {
+    text-align: center;
+}
+
+.shop-table td.item-price {
+    text-align: center;
+    color: #e94560;
+    font-weight: bold;
+}
+
+.shop-table td.item-action {
+    text-align: right;
+}
+
+.shop-table .action-btn {
+    padding: 5px 12px;
+    font-size: 12px;
+}
+
+.shop-form {
+    display: inline;
+}
+
+.shop-desc {
+    margin: 5px 0;
+    color: #aaa;
+    font-size: 12px;
+}

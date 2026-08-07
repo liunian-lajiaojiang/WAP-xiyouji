@@ -1,0 +1,17 @@
+sessions/
+logs/
+*.log
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.env
+.workbuddy
+vendor/
+node_modules/
+修复php安装.php

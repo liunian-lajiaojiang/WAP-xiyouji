@@ -1,0 +1,32 @@
+.item-title {
+    margin: 5px 0;
+}
+
+.item-description {
+    margin: 10px 0;
+}
+
+.item-info {
+    margin: 5px 0;
+}
+
+.item-info .stat-text {
+    color: #8cf;
+}
+
+.item-info .hint-text {
+    color: #aaa;
+}
+
+.item-ground-warning {
+    color: #ff6600;
+    margin: 10px 0;
+}
+
+.actions {
+    margin: 15px 0;
+}
+
+.actions a {
+    margin-right: 15px;
+}

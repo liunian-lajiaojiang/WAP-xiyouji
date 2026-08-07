@@ -1,0 +1,77 @@
+.combat-container {
+    padding: 15px;
+}
+.combat-header {
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #ffaa00;
+    margin-bottom: 15px;
+}
+.combat-info {
+    margin-bottom: 15px;
+}
+.combat-info div {
+    margin: 5px 0;
+}
+.hp-bar {
+    width: 40%;
+    height: 22px;
+    background-color: #333;
+    overflow: hidden;
+    position: relative;
+    font-size: 13px;
+}
+.hp-fill {
+    height: 100%;
+    line-height: 22px;
+    text-align: center;
+    transition: width 0.3s ease;
+}
+.hp-high { background-color: #00ff00; }
+.hp-medium { background-color: #ffff00; color: #000; }
+.hp-low { background-color: #ff0000; }
+
+.log-time {
+    color: #888;
+    font-size: 12px;
+}
+.combat-log {
+    max-height: 300px;
+    overflow-y: auto;
+    font-size: 14px;
+    line-height: 1.6;
+}
+.combat-log p {
+    margin: 3px 0;
+    padding: 0;
+}
+
+.damage-popup {
+    position: absolute;
+    font-weight: bold;
+    font-size: 14px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    animation: damagePopup 1.5s ease-out forwards;
+    z-index: 9999;
+    pointer-events: none;
+}
+.damage-popup.player {
+    color: #ff4444;
+}
+.damage-popup.target {
+    color: #ffcc00;
+}
+.damage-popup.heal {
+    color: #44ff44;
+}
+@keyframes damagePopup {
+    0% {
+        opacity: 1;
+        transform: translateX(-50%) scale(1.1) translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) scale(1) translateY(-8px);
+    }
+}

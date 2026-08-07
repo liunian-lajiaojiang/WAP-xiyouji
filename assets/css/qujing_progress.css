@@ -1,0 +1,108 @@
+body { 
+    font-family: "Microsoft YaHei", Arial, sans-serif; 
+    background: #1a1a2e; 
+    color: #eee; 
+    padding: 20px; 
+}
+.container { 
+    max-width: 900px; 
+    margin: 0 auto; 
+}
+h1 { 
+    color: #ffd700; 
+    text-align: center; 
+}
+.status-box { 
+    background: #16213e; 
+    padding: 20px; 
+    border-radius: 10px; 
+    margin-bottom: 20px; 
+}
+.progress-bar { 
+    background: #0f3460; 
+    height: 30px; 
+    border-radius: 15px; 
+    overflow: hidden; 
+    margin: 15px 0; 
+}
+.progress-fill { 
+    background: linear-gradient(90deg, #e94560, #ff6b6b); 
+    height: 100%; 
+    transition: width 0.5s; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    font-weight: bold; 
+}
+.quest-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+    gap: 10px; 
+}
+.quest-item { 
+    background: #16213e; 
+    padding: 15px; 
+    border-radius: 8px; 
+    border-left: 4px solid #444; 
+}
+.quest-item.completed { 
+    border-left-color: #00ff00; 
+    background: #1a3a1a; 
+}
+.quest-item.current { 
+    border-left-color: #ffd700; 
+    background: #3a3a1a; 
+}
+.quest-name { 
+    font-weight: bold; 
+    margin-bottom: 5px; 
+}
+.quest-daoxing { 
+    font-size: 0.9em; 
+    color: #888; 
+}
+.quest-reward { 
+    color: #4ecdc4; 
+    font-size: 0.85em; 
+}
+.status-tag { 
+    display: inline-block; 
+    padding: 2px 8px; 
+    border-radius: 4px; 
+    font-size: 0.8em; 
+    margin-left: 10px; 
+}
+.tag-current { 
+    background: #ffd700; 
+    color: #000; 
+}
+.tag-done { 
+    background: #00ff00; 
+    color: #000; 
+}
+.info-row { 
+    display: flex; 
+    justify-content: space-between; 
+    padding: 8px 0; 
+    border-bottom: 1px solid #333; 
+}
+.back-link { 
+    display: inline-block; 
+    margin-top: 20px; 
+    color: #4ecdc4; 
+    text-decoration: none; 
+}
+.back-link:hover { 
+    text-decoration: underline; 
+}
+.reward-box { 
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+    padding: 20px; 
+    border-radius: 10px; 
+    margin-top: 20px; 
+    text-align: center; 
+}
+.total-reward { 
+    font-size: 2em; 
+    color: #ffd700; 
+}

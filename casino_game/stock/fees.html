@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../assets/css/light-theme.css">
+    <script src="../../assets/js/theme-init.js"></script>
+    <title>持仓费用记录</title>
+    <link rel="shortcut icon" href="../../assets/images/favicon.ico">
+    <style>
+        body { padding: 10px; font-size: 14px; }
+        h1 { font-size: 1.2em; margin-bottom: 10px; }
+        a { margin-right: 10px; }
+        table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background: #575757; }
+        .tag { padding: 2px 6px; font-size: 0.9em; }
+        .tag-long { background: #d4edda; color: #155724; }
+        .tag-short { background: #f8d7da; color: #721c24; }
+        .empty-state { text-align: center; padding: 20px; color: #999; }
+    </style>
+</head>
+<body>
+    <h1>持仓费用记录</h1>
+    <p><a href="index.html">返回主页</a> | <a href="history.html">交易记录</a></p>
+    <p>📋 每分钟收取持仓市值的万分之一作为手续费</p>
+    <p>💰 今日持仓费: <span id="todayPositionFees">0两</span> | 交易手续费: <span id="todayTradeFees">0两</span></p>
+    
+    <table>
+        <thead>
+            <tr><th>时间</th><th>股票</th><th>类型</th><th>市值</th><th>手续费</th></tr>
+        </thead>
+        <tbody id="feesTable"></tbody>
+    </table>
+
+    <script>
+        function formatGold(num) {
+            return parseFloat(num || 0).toFixed(2) + '两';
+        }
+
+        async function loadFeesInfo() {
+            try {
+                const res = await fetch('api/fees.php');
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('todayPositionFees').textContent = formatGold(data.today_position_fees);
+                    document.getElementById('todayTradeFees').textContent = formatGold(data.today_trade_fees);
+
+                    const tbody = document.getElementById('feesTable');
+                    if (data.fees.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" class="empty-state">暂无持仓费用记录</td></tr>';
+                    } else {
+                        tbody.innerHTML = data.fees.map(f => `
+                            <tr>
+                                <td>${new Date(f.created_at).toLocaleString()}</td>
+                                <td><strong>${f.symbol}</strong></td>
+                                <td><span class="tag ${f.position_type === 'long' ? 'tag-long' : 'tag-short'}">${f.position_type === 'long' ? '做多' : '做空'}</span></td>
+                                <td>${formatGold(f.position_value)}</td>
+                                <td style="color:#ef4444">-${formatGold(f.fee_amount)}</td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+            } catch (e) {
+                console.error('加载手续费信息失败:', e);
+                document.getElementById('feesTable').innerHTML = '<tr><td colspan="5" class="empty-state">加载失败</td></tr>';
+            }
+        }
+
+        loadFeesInfo();
+    </script>
+</body>
+</html>

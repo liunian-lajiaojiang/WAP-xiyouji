@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>股票详情 - 大唐股票买卖</title>
+    <link rel="shortcut icon" href="../../assets/images/favicon.ico">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link rel="stylesheet" href="../../assets/css/stock-detail.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1 id="stockName">加载中...</h1>
+                <p id="stockSymbol" style="opacity:0.8">--</p>
+            </div>
+            <div class="price-info">
+                <div class="current-price" id="currentPrice">--</div>
+                <div class="price-change" id="priceChange">--</div>
+            </div>
+            <a href="index.html" class="btn btn-primary">返回首页</a>
+        </div>
+        
+        <div class="card">
+            <h2>K线走势</h2>
+            <div class="period-tabs">
+                <button class="period-tab active" onclick="switchPeriod('1min')">1分钟</button>
+                <button class="period-tab" onclick="switchPeriod('5min')">5分钟</button>
+                <button class="period-tab" onclick="switchPeriod('15min')">15分钟</button>
+                <button class="period-tab" onclick="switchPeriod('1h')">1小时</button>
+                <button class="period-tab" onclick="switchPeriod('1d')">日线</button>
+            </div>
+            <div class="legend">
+                <div class="legend-item"><div class="legend-dot" style="background:#fff"></div>收盘价</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#ff9800"></div>MA5</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#9c27b0"></div>MA10</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#00bcd4"></div>MA20</div>
+            </div>
+            <div id="klineChart"></div>
+        </div>
+        
+        <div class="card">
+            <h2>技术指标分析</h2>
+            <div class="indicators-grid">
+                <div class="indicator-card">
+                    <div class="indicator-header">
+                        <span class="indicator-name">MACD</span>
+                        <span class="signal" id="macdSignal">--</span>
+                    </div>
+                    <div class="indicator-row"><span class="indicator-label">DIF</span><span class="indicator-data" id="macdDif">--</span></div>
+                    <div class="indicator-row"><span class="indicator-label">DEA</span><span class="indicator-data" id="macdDea">--</span></div>
+                    <div class="indicator-row"><span class="indicator-label">MACD</span><span class="indicator-data" id="macdBar">--</span></div>
+                </div>
+                <div class="indicator-card">
+                    <div class="indicator-header">
+                        <span class="indicator-name">RSI (14)</span>
+                        <span class="signal" id="rsiSignal">--</span>
+                    </div>
+                    <div class="indicator-row"><span class="indicator-label">RSI</span><span class="indicator-data" id="rsiValue">--</span></div>
+                    <div class="indicator-row"><span class="indicator-label">超买区间</span><span class="indicator-data">> 70</span></div>
+                    <div class="indicator-row"><span class="indicator-label">超卖区间</span><span class="indicator-data">< 30</span></div>
+                </div>
+                <div class="indicator-card">
+                    <div class="indicator-header">
+                        <span class="indicator-name">KDJ (9,3,3)</span>
+                        <span class="signal" id="kdjSignal">--</span>
+                    </div>
+                    <div class="indicator-row"><span class="indicator-label">K</span><span class="indicator-data" id="kdjK">--</span></div>
+                    <div class="indicator-row"><span class="indicator-label">D</span><span class="indicator-data" id="kdjD">--</span></div>
+                    <div class="indicator-row"><span class="indicator-label">J</span><span class="indicator-data" id="kdjJ">--</span></div>
+                </div>
+                <div class="indicator-card">
+                    <div class="indicator-header">
+                        <span class="indicator-name">均线系统</span>
+                        <span class="signal" id="maSignal">--</span>
+                    </div>
+                    <div class="indicator-row"><span class="indicator-label">MA5</span><span class="indicator-data" id="ma5Value">--</span></div>
+                    <div class="indicator-row"><span class="indicator-label">MA10</span><span class="indicator-data" id="ma10Value">--</span></div>
+                    <div class="indicator-row"><span class="indicator-label">MA20</span><span class="indicator-data" id="ma20Value">--</span></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>快速交易</h2>
+            <div class="trade-grid">
+                <div class="trade-form">
+                    <h3>买入（做多）</h3>
+                    <div class="form-group">
+                        <label>买入数量</label>
+                        <input type="number" id="buyQuantity" min="1" value="1" oninput="updateAmount()">
+                    </div>
+                    <div class="form-group">
+                        <label>预估金额</label>
+                        <input type="text" id="buyAmount" readonly>
+                    </div>
+                    <button class="btn btn-success" onclick="trade('buy')">买入</button>
+                </div>
+                <div class="trade-form">
+                    <h3>做空</h3>
+                    <div class="form-group">
+                        <label>做空数量</label>
+                        <input type="number" id="shortQuantity" min="1" value="1" oninput="updateAmount()">
+                    </div>
+                    <div class="form-group">
+                        <label>预估保证金 (50%)</label>
+                        <input type="text" id="shortMargin" readonly>
+                    </div>
+                    <button class="btn btn-danger" onclick="trade('short')">做空</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let klineChart = null;
+        let currentStockId = 0;
+        let currentPrice = 0;
+        let currentPeriod = '1min';
+        let stockData = null;
+        let kline = [];
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        currentStockId = parseInt(urlParams.get('id')) || 1;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            initChart();
+            loadStockInfo();
+            loadKlineData();
+            setInterval(() => { loadStockInfo(); loadKlineData(); }, 5000);
+        });
+        
+        function initChart() {
+            klineChart = echarts.init(document.getElementById('klineChart'));
+            window.addEventListener('resize', () => klineChart.resize());
+        }
+        
+        async function loadStockInfo() {
+            try {
+                const res = await fetch('api/stocks.php');
+                const data = await res.json();
+                if (data.success) {
+                    stockData = data.stocks.find(s => s.id == currentStockId);
+                    if (stockData) {
+                        document.getElementById('stockName').textContent = stockData.name;
+                        document.getElementById('stockSymbol').textContent = stockData.symbol;
+                        document.getElementById('currentPrice').textContent = formatGold(stockData.price);
+                        const change = parseFloat(stockData.change_percent);
+                        const changeEl = document.getElementById('priceChange');
+                        changeEl.textContent = (change >= 0 ? '+' : '') + change.toFixed(2) + '%';
+                        changeEl.className = 'price-change ' + (change >= 0 ? 'positive' : 'negative');
+                        currentPrice = parseFloat(stockData.price);
+                        updateAmount();
+                    }
+                }
+            } catch (e) { console.error('加载股票信息失败:', e); }
+        }
+        
+        async function loadKlineData() {
+            try {
+                const res = await fetch(`api/kline.php?stock_id=${currentStockId}&period=${currentPeriod}&limit=100`);
+                const data = await res.json();
+                if (data.success && data.kline.length > 0) {
+                    renderChart(data.kline, data.indicators);
+                    updateIndicators(data.indicators);
+                } else {
+                    document.getElementById('klineChart').innerHTML = '<p style="text-align:center;color:#94a3b8;padding:100px;">暂无K线数据</p>';
+                }
+            } catch (e) { console.error('加载K线数据失败:', e); }
+        }
+        
+        function renderChart(klineData, indicators) {
+            if (!klineChart) return;
+            kline = klineData;
+            const dates = kline.map(item => {
+                const d = new Date(item.timestamp);
+                return d.toLocaleString('zh-CN', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
+            });
+            const kd = kline.map(item => [item.open, item.close, item.low, item.high]);
+            const volumes = kline.map(item => item.volume);
+            
+            const option = {
+                backgroundColor: 'transparent', animation: false,
+                tooltip: {
+                    trigger: 'axis', axisPointer: { type: 'cross' },
+                    backgroundColor: 'rgba(30, 41, 59, 0.95)', borderColor: '#334155', textStyle: { color: '#fff' },
+                    formatter: function(params) {
+                        const k = kline[params[0].dataIndex];
+                        const date = new Date(k.timestamp);
+                        let html = `<div style="font-weight:bold">${date.toLocaleString()}</div>`;
+                        html += `<div>开盘: <b>${formatGold(k.open)}</b></div>`;
+                        html += `<div>收盘: <b style="color:${k.close>=k.open?'#00ff00':'#ff4444'}">${formatGold(k.close)}</b></div>`;
+                        html += `<div>最高: ${formatGold(k.high)}</div>`;
+                        html += `<div>最低: ${formatGold(k.low)}</div>`;
+                        html += `<div>成交量: ${k.volume.toLocaleString()}</div>`;
+                        return html;
+                    }
+                },
+                legend: { show: false },
+                grid: [{ left: 60, right: 20, top: 20, height: '55%' }, { left: 60, right: 20, top: '75%', height: '15%' }],
+                xAxis: [
+                    { type: 'category', data: dates, gridIndex: 0, boundaryGap: false, axisLine: { lineStyle: { color: '#334155' } }, axisLabel: { show: false } },
+                    { type: 'category', data: dates, gridIndex: 1, boundaryGap: false, axisLine: { lineStyle: { color: '#334155' } }, axisLabel: { color: '#64748b', fontSize: 10 } }
+                ],
+                yAxis: [
+                    { scale: true, gridIndex: 0, splitLine: { lineStyle: { color: '#1e293b' } }, axisLine: { lineStyle: { color: '#334155' } }, axisLabel: { color: '#64748b' } },
+                    { scale: true, gridIndex: 1, splitLine: { show: false }, axisLine: { lineStyle: { color: '#334155' } }, axisLabel: { show: false } }
+                ],
+                dataZoom: [{ type: 'inside', xAxisIndex: [0, 1], start: 60, end: 100 }],
+                series: [
+                    {
+                        name: 'K线', type: 'candlestick', data: kd, xAxisIndex: 0, yAxisIndex: 0,
+                        itemStyle: { color: '#00ff00', color0: '#ff4444', borderColor: '#00ff00', borderColor0: '#ff4444' }
+                    },
+                    { name: 'MA5', type: 'line', data: indicators.ma.ma5, xAxisIndex: 0, yAxisIndex: 0, smooth: true, showSymbol: false, lineStyle: { color: '#ff9800', width: 1.5 } },
+                    { name: 'MA10', type: 'line', data: indicators.ma.ma10, xAxisIndex: 0, yAxisIndex: 0, smooth: true, showSymbol: false, lineStyle: { color: '#9c27b0', width: 1.5 } },
+                    { name: 'MA20', type: 'line', data: indicators.ma.ma20, xAxisIndex: 0, yAxisIndex: 0, smooth: true, showSymbol: false, lineStyle: { color: '#00bcd4', width: 1.5 } },
+                    {
+                        name: '成交量', type: 'bar', data: volumes, xAxisIndex: 1, yAxisIndex: 1, barWidth: '60%',
+                        itemStyle: { color: function(params) { const k = kline[params.dataIndex]; return k.close >= k.open ? 'rgba(0,255,0,0.5)' : 'rgba(255,68,68,0.5)'; } }
+                    }
+                ]
+            };
+            klineChart.setOption(option);
+        }
+        
+        function updateIndicators(indicators) {
+            const n = indicators.macd.macd.length - 1;
+            document.getElementById('macdDif').textContent = indicators.macd.dif[n] ? indicators.macd.dif[n].toFixed(2) : '--';
+            document.getElementById('macdDea').textContent = indicators.macd.dea[n] ? indicators.macd.dea[n].toFixed(2) : '--';
+            document.getElementById('macdBar').textContent = indicators.macd.macd[n] ? indicators.macd.macd[n].toFixed(2) : '--';
+            const macdSignal = document.getElementById('macdSignal');
+            if (indicators.macd.dif[n] > indicators.macd.dea[n]) { macdSignal.textContent = '看多'; macdSignal.className = 'signal signal-buy'; }
+            else { macdSignal.textContent = '看空'; macdSignal.className = 'signal signal-sell'; }
+            
+            const rsi = indicators.rsi[n];
+            document.getElementById('rsiValue').textContent = rsi ? rsi.toFixed(2) : '--';
+            const rsiSignal = document.getElementById('rsiSignal');
+            if (rsi > 70) { rsiSignal.textContent = '超买'; rsiSignal.className = 'signal signal-sell'; }
+            else if (rsi < 30) { rsiSignal.textContent = '超卖'; rsiSignal.className = 'signal signal-buy'; }
+            else { rsiSignal.textContent = '中性'; rsiSignal.className = 'signal signal-neutral'; }
+            
+            document.getElementById('kdjK').textContent = indicators.kdj.k[n] ? indicators.kdj.k[n].toFixed(2) : '--';
+            document.getElementById('kdjD').textContent = indicators.kdj.d[n] ? indicators.kdj.d[n].toFixed(2) : '--';
+            document.getElementById('kdjJ').textContent = indicators.kdj.j[n] ? indicators.kdj.j[n].toFixed(2) : '--';
+            const kdjSignal = document.getElementById('kdjSignal');
+            if (indicators.kdj.k[n] > 80) { kdjSignal.textContent = '超买'; kdjSignal.className = 'signal signal-sell'; }
+            else if (indicators.kdj.k[n] < 20) { kdjSignal.textContent = '超卖'; kdjSignal.className = 'signal signal-buy'; }
+            else { kdjSignal.textContent = '中性'; kdjSignal.className = 'signal signal-neutral'; }
+            
+            const ma5 = indicators.ma.ma5[n], ma10 = indicators.ma.ma10[n], ma20 = indicators.ma.ma20[n];
+            document.getElementById('ma5Value').textContent = ma5 ? formatGold(ma5) : '--';
+            document.getElementById('ma10Value').textContent = ma10 ? formatGold(ma10) : '--';
+            document.getElementById('ma20Value').textContent = ma20 ? formatGold(ma20) : '--';
+            const maSignal = document.getElementById('maSignal');
+            if (ma5 && ma20) {
+                if (ma5 > ma20) { maSignal.textContent = '多头'; maSignal.className = 'signal signal-buy'; }
+                else { maSignal.textContent = '空头'; maSignal.className = 'signal signal-sell'; }
+            } else { maSignal.textContent = '观望'; maSignal.className = 'signal signal-neutral'; }
+        }
+        
+        function switchPeriod(period) {
+            currentPeriod = period;
+            document.querySelectorAll('.period-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            loadKlineData();
+        }
+        
+        function updateAmount() {
+            const buyQty = parseInt(document.getElementById('buyQuantity').value) || 0;
+            const shortQty = parseInt(document.getElementById('shortQuantity').value) || 0;
+            document.getElementById('buyAmount').value = formatGold(buyQty * currentPrice);
+            document.getElementById('shortMargin').value = formatGold(shortQty * currentPrice * 0.5);
+        }
+        
+        async function trade(action) {
+            const qty = parseInt(document.getElementById(action === 'buy' ? 'buyQuantity' : 'shortQuantity').value);
+            if (qty <= 0) { alert('请输入有效的数量'); return; }
+            try {
+                const res = await fetch('api/trade.php', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action, stock_id: currentStockId, quantity: qty })
+                });
+                const data = await res.json();
+                if (data.success) { alert(data.message); loadStockInfo(); }
+                else { alert('交易失败: ' + data.error); }
+            } catch (e) { alert('交易请求失败'); }
+        }
+        
+        function formatGold(num) {
+            if (num === null || num === undefined || isNaN(num)) return '0两';
+            return parseFloat(num).toFixed(2) + '两';
+        }
+        
+        function formatNumber(num) {
+            return parseFloat(num).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+    </script>
+</body>
+</html>

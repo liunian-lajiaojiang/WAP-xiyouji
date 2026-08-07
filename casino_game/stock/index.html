@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大唐股票买卖</title>
+    <link rel="shortcut icon" href="../../assets/images/favicon.ico">
+    <link rel="stylesheet" href="../../assets/css/stock.css">
+    <link rel="stylesheet" href="../../assets/css/light-theme.css">
+    <script src="../../assets/js/theme-init.js"></script>
+</head>
+
+<body>
+    <div id="mainContainer">
+        <a href="javascript:location.reload();"  onclick="refreshData()" title="刷新数据">大唐股票买卖</a>&ensp;
+        <a href="fees.html">持仓费用记录</a>&ensp;
+        <a href="history.html">交易记录</a>&ensp;
+        <a href="../../functions/room.php">返回游戏</a>
+        <br>
+        <br>
+        <p>💰黄金: <span id="balance">0两</span> | 总资产: <span id="totalAssets">0两</span> | 盈亏: <span
+                id="totalPnl">0两</span></p>
+        <p>📊今日持仓费: <span id="todayPositionFees">0两</span> | 交易手续费: <span id="todayTradeFees">0两</span></p>
+        <p>📋手续费：交易0.1% + 持仓万1/分钟</p>
+        <h4>市场行情</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>代码</th>
+                    <th>名称</th>
+                    <th>价格</th>
+                    <th>涨跌幅</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="stocksTable"></tbody>
+        </table>
+
+        <h4>我的持仓</h4>
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('long')">做多</div>
+            <div class="tab" onclick="switchTab('short')">做空</div>
+        </div>
+        <div id="longPositions" class="tab-content active">
+            <table>
+                <thead>
+                    <tr>
+                        <th>股票</th>
+                        <th>数量</th>
+                        <th>成本</th>
+                        <th>现价</th>
+                        <th>盈亏</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="longTable"></tbody>
+            </table>
+        </div>
+        <div id="shortPositions" class="tab-content">
+            <table>
+                <thead>
+                    <tr>
+                        <th>股票</th>
+                        <th>数量</th>
+                        <th>卖出价</th>
+                        <th>现价</th>
+                        <th>盈亏</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="shortTable"></tbody>
+            </table>
+        </div>
+
+        
+    </div>
+
+    <!-- 交易模态框 -->
+    <div class="modal" id="tradeModal" style="color: #999;" background-color="white" color="black">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">交易</h3>
+            </div>
+            <div class="form-group">
+                <label>股票</label>
+                <input type="text" id="tradeStock" readonly>
+            </div>
+            <div class="form-group">
+                <label>当前价格</label>
+                <input type="text" id="tradePrice" readonly>
+            </div>
+            <div class="form-group">
+                <label>数量</label>
+                <input type="number" id="tradeQuantity" min="1" value="1">
+            </div>
+            <div class="form-group">
+                <label>预估金额</label>
+                <input type="text" id="tradeAmount" readonly>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" id="confirmBtn" onclick="confirmTrade()">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 错误提示模态框 -->
+    <div class="modal" id="errorModal">
+        <div class="modal-content" style="max-width:400px;">
+            <div class="modal-header">
+                <h3>提示</h3>
+            </div>
+            <div id="errorMessage" style="padding:15px 0;text-align:center;font-size:1.1em;line-height:1.8;"></div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeErrorModal()">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <button class="refresh-btn" onclick="refreshData()" title="刷新数据">🔄</button>
+
+    <script>
+        let currentStocks = [];
+        let currentAction = '';
+        let currentStockId = 0;
+        let currentStockPrice = 0;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkLoginStatus();
+        });
+
+        async function checkLoginStatus() {
+            try {
+                const res = await fetch('api/user.php');
+                const data = await res.json();
+                if (data.success) {
+                    showMainPage();
+                } else {
+                    alert('请先登录游戏，3秒后跳转到角色选择页面...');
+                    setTimeout(() => {
+                        window.location.href = '../../functions/character_select.php';
+                    }, 3000);
+                }
+            } catch (e) {
+                alert('加载失败，请检查网络');
+            }
+        }
+
+        function showMainPage() {
+            document.getElementById('mainContainer').style.display = 'block';
+            updateAndLoad();
+            setInterval(() => {
+                updateAndLoad();
+            }, 5000);
+        }
+
+        async function updateAndLoad() {
+            await fetch('api/stocks.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ update_prices: true })
+            });
+            loadAllData();
+        }
+
+        async function loadAllData() {
+            await Promise.all([
+                loadUserInfo(),
+                loadStocks(),
+                loadPositions(),
+                loadFeesInfo()
+            ]);
+        }
+
+        async function loadFeesInfo() {
+            try {
+                const res = await fetch('api/fees.php');
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('todayPositionFees').textContent = formatGold(data.today_position_fees);
+                    document.getElementById('todayTradeFees').textContent = formatGold(data.today_trade_fees);
+                }
+            } catch (e) {
+                console.error('加载手续费失败:', e);
+            }
+        }
+
+        async function loadUserInfo() {
+            try {
+                const res = await fetch('api/user.php');
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('balance').textContent = formatGold(data.user.balance);
+                    document.getElementById('totalAssets').textContent = formatGold(data.user.total_assets);
+                    const pnl = data.user.total_assets - data.user.balance;
+                    const pnlEl = document.getElementById('totalPnl');
+                    pnlEl.textContent = (pnl >= 0 ? '+' : '') + formatGold(pnl);
+                    pnlEl.className = 'value ' + (pnl >= 0 ? 'positive' : 'negative');
+                }
+            } catch (e) {
+                console.error('加载用户信息失败:', e);
+            }
+        }
+
+        async function loadStocks() {
+            try {
+                const res = await fetch('api/stocks.php');
+                const data = await res.json();
+                if (data.success) {
+                    currentStocks = data.stocks;
+                    const tbody = document.getElementById('stocksTable');
+                    tbody.innerHTML = data.stocks.map(stock => `
+                        <tr>
+                            <td><strong>${stock.symbol}</strong></td>
+                            <td>${stock.name}</td>
+                            <td>${formatGold(stock.price)}</td>
+                            <td class="${stock.change_percent >= 0 ? 'price-up' : 'price-down'}">
+                                ${stock.change_percent >= 0 ? '▲' : '▼'} ${Math.abs(stock.change_percent)}%
+                            </td>
+                            <td>
+                                <a href="stock.html?id=${stock.id}" class="btn btn-primary">📈 详情</a>
+                                <button class="btn btn-success" onclick="openTradeModal('buy', ${stock.id}, ${stock.price}, '${stock.symbol}')">买入</button>
+                                <button class="btn btn-danger" onclick="openTradeModal('short', ${stock.id}, ${stock.price}, '${stock.symbol}')">做空</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (e) {
+                console.error('加载股票列表失败:', e);
+            }
+        }
+
+        async function loadPositions() {
+            try {
+                const res = await fetch('api/positions.php');
+                const data = await res.json();
+                if (data.success) {
+                    const longTbody = document.getElementById('longTable');
+                    if (data.long.length === 0) {
+                        longTbody.innerHTML = '<tr><td colspan="6" class="empty-state">暂无做多持仓</td></tr>';
+                    } else {
+                        longTbody.innerHTML = data.long.map(pos => `
+                            <tr>
+                                <td><strong>${pos.symbol}</strong><br><small>${pos.name}</small></td>
+                                <td>${pos.quantity}</td>
+                                <td>${formatGold(pos.avg_price)}</td>
+                                <td>${formatGold(pos.current_price)}</td>
+                                <td class="${pos.unrealized_pnl >= 0 ? 'price-up' : 'price-down'}">
+                                    ${pos.unrealized_pnl >= 0 ? '+' : ''}${formatGold(pos.unrealized_pnl)}
+                                    <br><small>(${pos.pnl_percent >= 0 ? '+' : ''}${pos.pnl_percent}%)</small>
+                                </td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="openTradeModal('sell', ${pos.stock_id}, ${pos.current_price}, '${pos.symbol}')">卖出</button>
+                                </td>
+                            </tr>
+                        `).join('');
+                    }
+
+                    const shortTbody = document.getElementById('shortTable');
+                    if (data.short.length === 0) {
+                        shortTbody.innerHTML = '<tr><td colspan="6" class="empty-state">暂无做空持仓</td></tr>';
+                    } else {
+                        shortTbody.innerHTML = data.short.map(pos => `
+                            <tr>
+                                <td><strong>${pos.symbol}</strong><br><small>${pos.name}</small></td>
+                                <td>${pos.quantity}</td>
+                                <td>${formatGold(pos.avg_price)}</td>
+                                <td>${formatGold(pos.current_price)}</td>
+                                <td class="${pos.unrealized_pnl >= 0 ? 'price-up' : 'price-down'}">
+                                    ${pos.unrealized_pnl >= 0 ? '+' : ''}${formatGold(pos.unrealized_pnl)}
+                                    <br><small>(${pos.pnl_percent >= 0 ? '+' : ''}${pos.pnl_percent}%)</small>
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary" onclick="openTradeModal('cover', ${pos.stock_id}, ${pos.current_price}, '${pos.symbol}')">平仓</button>
+                                </td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+            } catch (e) {
+                console.error('加载持仓失败:', e);
+            }
+        }
+
+        function openTradeModal(action, stockId, price, symbol) {
+            currentAction = action;
+            currentStockId = stockId;
+            currentStockPrice = price;
+
+            const titles = {
+                'buy': '买入股票（做多）',
+                'sell': '卖出股票',
+                'short': '做空股票',
+                'cover': '平仓（买回股票）'
+            };
+
+            document.getElementById('modalTitle').textContent = titles[action];
+            document.getElementById('tradeStock').value = symbol;
+            document.getElementById('tradePrice').value = formatGold(price);
+            document.getElementById('tradeQuantity').value = 1;
+            updateTradeAmount();
+
+            const confirmBtn = document.getElementById('confirmBtn');
+            confirmBtn.className = 'btn ' + (action === 'buy' || action === 'cover' ? 'btn-success' : action === 'short' ? 'btn-danger' : 'btn-warning');
+            confirmBtn.textContent = action === 'buy' ? '买入' : action === 'sell' ? '卖出' : action === 'short' ? '做空' : '平仓';
+
+            document.getElementById('tradeModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('tradeModal').classList.remove('active');
+        }
+
+        function showErrorModal(message) {
+            document.getElementById('errorMessage').innerHTML = message;
+            document.getElementById('errorModal').classList.add('active');
+        }
+
+        function closeErrorModal() {
+            document.getElementById('errorModal').classList.remove('active');
+        }
+
+        document.getElementById('tradeQuantity').addEventListener('input', updateTradeAmount);
+
+        function updateTradeAmount() {
+            const qty = parseInt(document.getElementById('tradeQuantity').value) || 0;
+            const amount = qty * currentStockPrice;
+            document.getElementById('tradeAmount').value = formatGold(amount) +
+                (currentAction === 'short' ? ' (保证金: ' + formatGold(amount * 0.5) + ')' : '');
+        }
+
+        async function confirmTrade() {
+            const quantity = parseInt(document.getElementById('tradeQuantity').value);
+            if (quantity <= 0) {
+                alert('请输入有效的数量');
+                return;
+            }
+
+            try {
+                const res = await fetch('api/trade.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: currentAction,
+                        stock_id: currentStockId,
+                        quantity: quantity
+                    })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    alert(data.message + (data.profit_loss ? '\n盈亏: ' + formatGold(data.profit_loss) : ''));
+                    closeModal();
+                    loadAllData();
+                } else {
+                    if (data.error && data.error.includes('<a ')) {
+                        showErrorModal(data.error);
+                    } else {
+                        alert('交易失败: ' + data.error);
+                    }
+                }
+            } catch (e) {
+                alert('交易请求失败');
+            }
+        }
+
+        function switchTab(type) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(type + 'Positions').classList.add('active');
+        }
+
+        function refreshData() {
+            const btn = document.querySelector('.refresh-btn');
+            btn.classList.add('spinning');
+            updateAndLoad().then(() => {
+                btn.classList.remove('spinning');
+            });
+        }
+
+        // 格式化黄金金额
+        function formatGold(num) {
+            if (num === null || num === undefined || isNaN(num)) return '0两';
+            return parseFloat(num).toFixed(2) + '两';
+        }
+
+        function formatNumber(num) {
+            if (num === null || num === undefined || isNaN(num)) return '0.00';
+            return parseFloat(num).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        document.getElementById('tradeModal').addEventListener('click', (e) => {
+            if (e.target.id === 'tradeModal') closeModal();
+        });
+
+        document.getElementById('errorModal').addEventListener('click', (e) => {
+            if (e.target.id === 'errorModal') closeErrorModal();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+/* crypto.php 页面专用样式 */
+
+/* 指标按钮样式 */
+.indicator-btn {
+    transition: all 0.2s ease;
+}
+.indicator-btn:hover {
+    transform: scale(1.05);
+}
+.indicator-btn.active {
+    border-color: #F0B90B !important;
+    background: #2B3139 !important;
+}
+.indicator-btn:not(.active) {
+    opacity: 0.5;
+}
+
+/* 用户栏 */
+.user-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background: #0B0E11;
+    border-bottom: 1px solid #1E2329;
+}
+.user-info {
+    font-size: 12px;
+    gap: 12px;
+    color: #EAECEF;
+}
+.user-name {
+    font-size: 18px;
+    font-weight: bold;
+    color: #F0B90B;
+}
+
+/* 退出按钮 */
+.btn-logout {
+    padding: 8px 16px;
+    background: #2B3139;
+    border: 1px solid #474D57;
+    border-radius: 4px;
+    color: #EAECEF;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.btn-logout:hover {
+    background: #474D57;
+    border-color: #F6465D;
+    color: #F6465D;
+}

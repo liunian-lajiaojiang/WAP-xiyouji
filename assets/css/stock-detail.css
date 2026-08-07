@@ -1,0 +1,38 @@
+body{background:#1a1a2e;color:#eee;min-height:100vh}
+.container{max-width:1400px;margin:0 auto;padding:20px}
+.header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);padding:25px;border-radius:15px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px}
+.header h1{font-size:1.8em}
+.price-info{display:flex;gap:30px;align-items:center}
+.current-price{font-size:2.5em;font-weight:bold}
+.price-change{padding:5px 15px;border-radius:20px}
+.card{background:#16213e;border-radius:15px;padding:20px;margin-bottom:20px}
+.card h2{margin-bottom:15px;color:#667eea;font-size:1.2em}
+.period-tabs{display:flex;gap:10px;margin-bottom:15px}
+.period-tab{padding:8px 16px;border:1px solid #334155;border-radius:6px;background:transparent;color:#94a3b8;cursor:pointer}
+.period-tab.active{background:#667eea;color:#fff;border-color:#667eea}
+#klineChart{width:100%;height:450px}
+.legend{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:10px;font-size:.9em}
+.legend-item{display:flex;align-items:center;gap:5px}
+.legend-dot{width:12px;height:3px;border-radius:2px}
+.indicators-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:15px}
+.indicator-card{background:#1e293b;padding:15px;border-radius:10px;border:1px solid #334155}
+.indicator-header{display:flex;justify-content:space-between;margin-bottom:10px}
+.indicator-name{font-weight:bold;color:#94a3b8}
+.indicator-value{font-size:1.2em;font-weight:bold}
+.indicator-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #334155}
+.indicator-row:last-child{border-bottom:none}
+.indicator-label{color:#64748b;font-size:.85em}
+.indicator-data{font-weight:500}
+.signal{display:inline-block;padding:3px 10px;border-radius:12px;font-size:.8em;margin-top:8px}
+.signal-buy{background:rgba(0,200,81,.2);color:#00c851}
+.signal-sell{background:rgba(255,68,68,.2);color:#ff4444}
+.signal-neutral{background:rgba(148,163,184,.2);color:#94a3b8}
+.trade-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.trade-form{background:#1e293b;padding:20px;border-radius:10px}
+.trade-form h3{margin-bottom:15px}
+.form-group{margin-bottom:15px}
+.form-group label{display:block;margin-bottom:5px;color:#94a3b8;font-size:.9em}
+.form-group input{width:100%;padding:12px;border:1px solid #334155;border-radius:6px;background:#0f172a;color:#fff;font-size:1em}
+.form-group input:focus{outline:none;border-color:#667eea}
+.trade-form button{width:100%;padding:12px;font-size:1em}
+@media(max-width:768px){.header{flex-direction:column;text-align:center}.price-info{flex-direction:column;gap:10px}#klineChart{height:300px}}

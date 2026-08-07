@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../assets/css/light-theme.css">
+    <script src="../../assets/js/theme-init.js"></script>
+    <title>交易记录</title>
+    <link rel="shortcut icon" href="../../assets/images/favicon.ico">
+    <style>
+        body { padding: 10px; font-size: 14px; }
+        h1 { font-size: 1.2em; margin-bottom: 10px; }
+        a { margin-right: 10px; }
+        table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background: #575757; }
+        .tag { padding: 2px 6px; font-size: 0.9em; }
+        .tag-long { background: #d4edda; color: #155724; }
+        .tag-short { background: #f8d7da; color: #721c24; }
+        .price-up { color: green; }
+        .price-down { color: red; }
+        .empty-state { text-align: center; padding: 20px; color: #999; }
+    </style>
+</head>
+<body>
+    <h1>交易记录</h1>
+    <p><a href="index.html">返回主页</a> | <a href="fees.html">持仓费用记录</a></p>
+    
+    <table>
+        <thead>
+            <tr><th>时间</th><th>类型</th><th>股票</th><th>数量</th><th>盈亏</th></tr>
+        </thead>
+        <tbody id="historyTable"></tbody>
+    </table>
+
+    <script>
+        function formatGold(num) {
+            return parseFloat(num || 0).toFixed(2) + '两';
+        }
+
+        async function loadHistory() {
+            try {
+                const res = await fetch('api/history.php');
+                const data = await res.json();
+                if (data.success) {
+                    const tbody = document.getElementById('historyTable');
+                    if (data.history.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" class="empty-state">暂无交易记录</td></tr>';
+                    } else {
+                        const typeLabels = {
+                            'buy': '<span class="tag tag-long">买入</span>',
+                            'sell': '<span class="tag" style="background:#fef3c7;color:#92400e">卖出</span>',
+                            'short': '<span class="tag tag-short">做空</span>',
+                            'cover': '<span class="tag" style="background:#dbeafe;color:#1e40af">平仓</span>'
+                        };
+                        tbody.innerHTML = data.history.map(h => `
+                            <tr>
+                                <td>${new Date(h.created_at).toLocaleString()}</td>
+                                <td>${typeLabels[h.type]}</td>
+                                <td><strong>${h.symbol}</strong></td>
+                                <td>${h.quantity}</td>
+                                <td>
+                                    ${h.profit_loss !== '0.00' ? `<span class="${h.profit_loss > 0 ? 'price-up' : 'price-down'}">${h.profit_loss > 0 ? '+' : ''}${formatGold(h.profit_loss)}</span>` : '-'}
+                                    ${parseFloat(h.fee) > 0 ? `<br><small style="color:#ef4444">手续费:${formatGold(h.fee)}</small>` : ''}
+                                </td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+            } catch (e) {
+                console.error('加载交易历史失败:', e);
+                document.getElementById('historyTable').innerHTML = '<tr><td colspan="5" class="empty-state">加载失败</td></tr>';
+            }
+        }
+
+        loadHistory();
+    </script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+.title {
+    color: #ffa500;
+    text-align: center;
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+.red { color: #ff3333; }
+.green { color: #33ff33; }
+.cyan { color: #33ffff; }
+.blue { color: #3366ff; }
+.purple { color: #cc66ff; }
+.yellow { color: #ffcc00; }
+.orange { color: #ff9933; }
+.brown { color: #aa6633; }
+.gray { color: #888888; }
+.button-bar {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 30px;
+    border-top: 1px solid #555;
+    border-bottom: 1px solid #555;
+}
+.button {
+    width: 50%;
+    text-align: center;
+    padding: 15px 0;
+    font-size: 20px;
+}
+.button-yellow { color: #ffcc00; }

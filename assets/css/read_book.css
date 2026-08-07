@@ -1,0 +1,92 @@
+body { 
+    font-family: "Microsoft YaHei", sans-serif; 
+    background: #f0e6d2; 
+    color: #333; 
+    padding: 20px; 
+}
+.container { 
+    max-width: 800px; 
+    margin: 0 auto; 
+    background: #fff; 
+    padding: 30px; 
+    border-radius: 8px; 
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+}
+.title { 
+    font-size: 24px; 
+    font-weight: bold; 
+    text-align: center; 
+    color: #8B4513; 
+    margin-bottom: 20px; 
+    border-bottom: 2px solid #8B4513; 
+    padding-bottom: 10px; 
+}
+.content { 
+    white-space: pre-wrap; 
+    font-size: 16px; 
+    line-height: 1.8; 
+    color: #444; 
+    margin: 20px 0; 
+    padding: 20px; 
+    background: #faf8f5; 
+    border-radius: 4px; 
+}
+.pagination { 
+    text-align: center; 
+    margin-top: 30px; 
+}
+.page-btn { 
+    display: inline-block; 
+    padding: 8px 16px; 
+    margin: 0 4px; 
+    background: #8B4513; 
+    color: #fff; 
+    text-decoration: none; 
+    border-radius: 4px; 
+}
+.page-btn:hover { 
+    background: #A0522D; 
+}
+.page-btn.disabled { 
+    background: #ccc; 
+    cursor: not-allowed; 
+}
+.page-info { 
+    margin: 10px 0; 
+    color: #666; 
+}
+.chapter-list { 
+    list-style: none; 
+    padding: 0; 
+}
+.chapter-item { 
+    padding: 10px; 
+    border-bottom: 1px dashed #ddd; 
+}
+.chapter-item a { 
+    text-decoration: none; 
+    color: #8B4513; 
+}
+.chapter-item a:hover { 
+    text-decoration: underline; 
+}
+.chapter-link { 
+    display: block; 
+    padding: 2px 0; 
+    color: #8B4513; 
+    text-decoration: none; 
+}
+.chapter-link:hover { 
+    background: #f5ede0; 
+    text-decoration: underline; 
+}
+.back-link { 
+    display: block; 
+    text-align: center; 
+    margin-top: 20px; 
+    color: #666; 
+    text-decoration: none; 
+}
+.back-link:hover { 
+    color: #8B4513; 
+}

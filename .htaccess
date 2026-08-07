@@ -1,0 +1,15 @@
+# InfinityFree 基础配置
+RewriteEngine On
+
+# 允许直接访问 PHP 文件
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [L]
+
+# 安全：禁止访问敏感文件
+<FilesMatch "\.(env|sql|log|ini|phar|sh)$">
+    Require all denied
+</FilesMatch>
+
+# 禁用目录列表
+Options -Indexes

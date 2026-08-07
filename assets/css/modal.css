@@ -1,0 +1,867 @@
+/* 运功弹窗样式 */
+.exert-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 50px;
+    padding-left: 10px;
+    padding-right: 10px;
+    box-sizing: border-box;
+}
+
+.exert-modal-overlay.active {
+    display: flex;
+}
+
+.exert-modal {
+    background-color: #2d2d2d;
+    border: 2px solid #4a4a4a;
+    border-radius: 8px;
+    padding: 12px;
+    max-width: 380px;
+    width: 100%;
+    max-height: 70vh;
+    overflow-y: auto;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+.exert-modal h3 {
+    color: #FFD700;
+    margin: 0 0 8px 0;
+    text-align: center;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.exert-modal-desc {
+    color: #aaaaaa;
+    font-size: 12px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.exert-type-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+}
+
+.exert-type-btn {
+    background-color: #3d3d3d;
+    border: 1px solid #555555;
+    border-radius: 4px;
+    padding: 8px 5px;
+    color: #ffffff;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+    min-height: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.exert-type-btn:hover {
+    background-color: #4a6a8a;
+    border-color: #6a9aca;
+}
+
+.exert-type-btn:active {
+    transform: scale(0.98);
+}
+
+.exert-type-btn .name {
+    color: #90EE90;
+    font-weight: bold;
+    font-size: 12px;
+    margin-bottom: 2px;
+}
+
+.exert-type-btn .desc {
+    color: #aaaaaa;
+    font-size: 10px;
+}
+
+.exert-type-btn .cost {
+    color: #ff9966;
+    font-size: 9px;
+    margin-top: 2px;
+}
+
+.exert-type-btn .require {
+    color: #ff6666;
+    font-size: 9px;
+    margin-top: 2px;
+}
+
+.exert-modal-close {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px;
+    background-color: #555555;
+    border: none;
+    border-radius: 4px;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.exert-modal-close:hover {
+    background-color: #666666;
+}
+
+.exert-loading {
+    text-align: center;
+    padding: 15px;
+    color: #aaaaaa;
+}
+
+.exert-error {
+    color: #ff6666;
+    text-align: center;
+    padding: 8px;
+}
+
+.exert-success {
+    color: #90EE90;
+    text-align: center;
+    padding: 8px;
+}
+
+/* 练功弹窗样式（复用运功弹窗模式） */
+.practice-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 50px;
+    padding-left: 10px;
+    padding-right: 10px;
+    box-sizing: border-box;
+}
+
+.practice-modal-overlay.active {
+    display: flex;
+}
+
+.practice-modal {
+    background-color: #2d2d2d;
+    border: 2px solid #4a4a4a;
+    border-radius: 8px;
+    padding: 12px;
+    max-width: 380px;
+    width: 100%;
+    max-height: 70vh;
+    overflow-y: auto;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+.practice-modal h3 {
+    color: #FFD700;
+    margin: 0 0 8px 0;
+    text-align: center;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.practice-modal-desc {
+    color: #aaaaaa;
+    font-size: 12px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.practice-info {
+    padding: 6px 8px;
+    margin-bottom: 10px;
+    background-color: #1e2a3a;
+    border: 1px solid #4a7ab5;
+    border-radius: 4px;
+    color: #B6D4FE;
+    font-size: 11px;
+    text-align: center;
+    line-height: 1.6;
+}
+
+.practice-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    margin-bottom: 10px;
+}
+
+.practice-table th {
+    color: #90EE90;
+    padding: 3px 4px;
+    border-bottom: 1px solid #444;
+    text-align: left;
+    font-size: 11px;
+}
+
+.practice-table td {
+    padding: 3px 4px;
+    border-bottom: 1px solid #333;
+    color: #ccc;
+}
+
+.practice-table tr:hover td {
+    background-color: #3a3a3a;
+}
+
+.practice-table .skill-name {
+    color: #FFD700;
+}
+
+.practice-table .skill-level {
+    color: #aaa;
+    font-size: 10px;
+    text-align: center;
+}
+
+.practice-btn {
+    background-color: #3a6a3a;
+    border: 1px solid #4a8a4a;
+    border-radius: 3px;
+    color: #90EE90;
+    cursor: pointer;
+    padding: 2px 8px;
+    font-size: 10px;
+    transition: all 0.2s;
+}
+
+.practice-btn:hover {
+    background-color: #4a8a4a;
+    border-color: #6acf6a;
+    color: #fff;
+}
+
+.practice-btn.disabled {
+    background-color: #333;
+    border-color: #444;
+    color: #666;
+    cursor: not-allowed;
+}
+
+.practice-modal-close {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px;
+    background-color: #555555;
+    border: none;
+    border-radius: 4px;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.practice-modal-close:hover {
+    background-color: #666666;
+}
+
+.practice-loading {
+    text-align: center;
+    padding: 15px;
+    color: #aaaaaa;
+    font-size: 12px;
+}
+
+/* 打坐/冥思弹窗样式 */
+.exercise-modal-overlay, .meditate-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 50px;
+    padding-left: 10px;
+    padding-right: 10px;
+    box-sizing: border-box;
+}
+
+.exercise-modal-overlay.active, .meditate-modal-overlay.active {
+    display: flex;
+}
+
+.exercise-modal, .meditate-modal {
+    background-color: #2d2d2d;
+    border: 2px solid #4a4a4a;
+    border-radius: 8px;
+    padding: 15px;
+    max-width: 320px;
+    width: 100%;
+    max-height: 50vh;
+    overflow-y: auto;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+.exercise-modal h3, .meditate-modal h3 {
+    color: #FFD700;
+    margin: 0 0 10px 0;
+    text-align: center;
+    font-size: 15px;
+}
+
+.exercise-modal-desc, .meditate-modal-desc {
+    color: #aaaaaa;
+    font-size: 12px;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.exercise-input-group, .meditate-input-group {
+    margin-bottom: 12px;
+}
+
+.exercise-input-group label, .meditate-input-group label {
+    display: block;
+    color: #90EE90;
+    font-size: 13px;
+    margin-bottom: 6px;
+    text-align: center;
+}
+
+.exercise-input-group input, .meditate-input-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #555555;
+    border-radius: 4px;
+    background-color: #3d3d3d;
+    color: #ffffff;
+    font-size: 14px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.exercise-input-group input:focus, .meditate-input-group input:focus {
+    outline: none;
+    border-color: #6a9aca;
+}
+
+.exercise-modal-tips, .meditate-modal-tips {
+    color: #ff9966;
+    font-size: 11px;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.exercise-modal-buttons, .meditate-modal-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.exercise-modal-btn, .meditate-modal-btn {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s ease;
+}
+
+.exercise-modal-btn.primary, .meditate-modal-btn.primary {
+    background-color: #4a6a8a;
+    color: #ffffff;
+}
+
+.exercise-modal-btn.primary:hover, .meditate-modal-btn.primary:hover {
+    background-color: #5a8ab8;
+}
+
+.exercise-modal-btn.secondary, .meditate-modal-btn.secondary {
+    background-color: #555555;
+    color: #ffffff;
+}
+
+.exercise-modal-btn.secondary:hover, .meditate-modal-btn.secondary:hover {
+    background-color: #666666;
+}
+
+/* 小屏幕手机适配 */
+@media screen and (max-width: 375px) {
+    .exert-modal-overlay, .exercise-modal-overlay, .meditate-modal-overlay, .practice-modal-overlay {
+        padding-top: 30px;
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+    
+    .exert-modal {
+        padding: 10px;
+        max-height: 65vh;
+        border-radius: 6px;
+    }
+    
+    .exert-modal h3 {
+        font-size: 14px;
+        margin-bottom: 6px;
+    }
+    
+    .exert-modal-desc {
+        font-size: 11px;
+        margin-bottom: 8px;
+    }
+    
+    .exert-type-grid {
+        grid-template-columns: 1fr;
+        gap: 5px;
+    }
+    
+    .exert-type-btn {
+        padding: 7px 4px;
+        min-height: 50px;
+    }
+    
+    .exert-type-btn .name {
+        font-size: 12px;
+    }
+    
+    .exert-type-btn .desc {
+        font-size: 10px;
+    }
+    
+    .exert-type-btn .cost,
+    .exert-type-btn .require {
+        font-size: 9px;
+    }
+    
+    .exert-modal-close {
+        padding: 7px;
+        font-size: 12px;
+        margin-top: 8px;
+    }
+    
+    .exercise-modal, .meditate-modal {
+        padding: 12px;
+        max-height: 45vh;
+        max-width: 280px;
+    }
+    
+    .exercise-modal h3, .meditate-modal h3 {
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+    
+    .exercise-modal-desc, .meditate-modal-desc {
+        font-size: 11px;
+        margin-bottom: 10px;
+    }
+    
+    .exercise-input-group input, .meditate-input-group input {
+        padding: 6px;
+        font-size: 13px;
+    }
+    
+    .exercise-modal-tips, .meditate-modal-tips {
+        font-size: 10px;
+    }
+    
+    .exercise-modal-btn, .meditate-modal-btn {
+        padding: 6px;
+        font-size: 12px;
+    }
+}
+
+/* 极小屏幕适配 */
+@media screen and (max-width: 320px) {
+    .exert-modal {
+        padding: 8px;
+        max-height: 60vh;
+    }
+    
+    .exert-modal h3 {
+        font-size: 13px;
+    }
+    
+    .exert-modal-desc {
+        font-size: 10px;
+    }
+    
+    .exert-type-btn {
+        padding: 5px 3px;
+        min-height: 45px;
+    }
+    
+    .exert-type-btn .name {
+        font-size: 11px;
+    }
+    
+    .exert-type-btn .desc {
+        font-size: 9px;
+    }
+    
+    .exert-type-btn .cost,
+    .exert-type-btn .require {
+        font-size: 8px;
+    }
+    
+    .exercise-modal, .meditate-modal {
+        padding: 10px;
+        max-width: 260px;
+    }
+    
+    .exercise-modal h3, .meditate-modal h3 {
+        font-size: 13px;
+    }
+    
+    .exercise-modal-desc, .meditate-modal-desc {
+        font-size: 10px;
+    }
+}
+
+/* 天王披风传送弹窗样式（复用运功弹窗模式） */
+.teleport-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 80px;
+    padding-left: 10px;
+    padding-right: 10px;
+    box-sizing: border-box;
+}
+
+.teleport-modal-overlay.active {
+    display: flex;
+}
+
+.teleport-modal {
+    background-color: #2d2d2d;
+    border: 2px solid #4a4a4a;
+    border-radius: 8px;
+    padding: 16px;
+    max-width: 340px;
+    width: 100%;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+.teleport-modal h3 {
+    color: #FFD700;
+    margin: 0 0 8px 0;
+    text-align: center;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.teleport-modal-desc {
+    color: #aaaaaa;
+    font-size: 12px;
+    margin-bottom: 4px;
+    text-align: center;
+}
+
+.teleport-btn {
+    background-color: #3d3d3d;
+    border: 1px solid #555555;
+    border-radius: 4px;
+    padding: 10px 5px;
+    color: #ffffff;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+    font-size: 13px;
+}
+
+.teleport-btn:hover {
+    background-color: #4a6a8a;
+    border-color: #6a9aca;
+}
+
+.teleport-btn:active {
+    transform: scale(0.98);
+}
+
+.teleport-btn.primary {
+    background-color: #2d5a3d;
+    border-color: #4a8a4a;
+    color: #90EE90;
+    font-weight: bold;
+}
+
+.teleport-btn.primary:hover {
+    background-color: #3d7a4d;
+    border-color: #6aaa6a;
+}
+
+.teleport-btn.danger {
+    background-color: #5a2d2d;
+    border-color: #8a4a4a;
+    color: #ff8888;
+}
+
+.teleport-btn.danger:hover {
+    background-color: #7a3d3d;
+    border-color: #aa6a6a;
+}
+
+.teleport-btn.danger.active-mode {
+    background-color: #cc4444;
+    border-color: #ff6666;
+    color: #fff;
+    font-weight: bold;
+}
+
+.teleport-modal-close {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px;
+    background-color: #555555;
+    border: none;
+    border-radius: 4px;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.teleport-modal-close:hover {
+    background-color: #666666;
+}
+
+/* 传送格子 */
+.teleport-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.teleport-slot {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    min-height: 56px;
+}
+
+.teleport-slot.empty {
+    background-color: #2a2a2a;
+    border: 2px dashed #444;
+    color: #666;
+    font-size: 11px;
+}
+
+.teleport-slot.empty:hover {
+    border-color: #888;
+    color: #aaa;
+    background-color: #333;
+}
+
+.teleport-slot.filled {
+    background-color: #2d3a2d;
+    border: 2px solid #3d6a3d;
+}
+
+.teleport-slot.filled:hover {
+    background-color: #3d5a3d;
+    border-color: #6aaa6a;
+    box-shadow: 0 0 8px rgba(106, 170, 106, 0.3);
+}
+
+.teleport-slot .slot-name {
+    color: #90EE90;
+    font-weight: bold;
+    font-size: 12px;
+    text-align: center;
+    line-height: 1.2;
+    padding: 0 3px;
+    word-break: break-all;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.teleport-slot .slot-plus {
+    font-size: 20px;
+    color: #555;
+    line-height: 1;
+}
+
+/* 忘记模式 */
+.teleport-slot.forget-mode.filled {
+    border-color: #8a3a3a;
+    background-color: #3d2a2a;
+    position: relative;
+}
+
+.teleport-slot.forget-mode.filled:hover {
+    background-color: #5d2a2a;
+    border-color: #cc4444;
+    box-shadow: 0 0 8px rgba(204, 68, 68, 0.4);
+}
+
+.teleport-slot .slot-x {
+    display: none;
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    color: #ff4444;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.teleport-slot.forget-mode .slot-x {
+    display: block;
+}
+
+.teleport-slot .slot-name-dimmer {
+    display: none;
+}
+
+.teleport-slot.forget-mode .slot-name-dimmer {
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #ff6666;
+    font-size: 24px;
+    font-weight: bold;
+    pointer-events: none;
+}
+
+.teleport-bottom {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+/* 科举考试弹窗样式 */
+.exam-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 50px;
+    padding-left: 10px;
+    padding-right: 10px;
+    box-sizing: border-box;
+}
+
+.exam-modal-overlay.active {
+    display: flex;
+}
+
+.exam-modal {
+    background-color: #2d2d2d;
+    border: 2px solid #4a4a4a;
+    border-radius: 8px;
+    padding: 16px;
+    max-width: 480px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+.exam-modal h3 {
+    color: #FFD700;
+    margin: 0 0 12px 0;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.exam-modal-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.exam-modal-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.exam-modal-btn.primary {
+    background-color: #4a6a8a;
+    color: #ffffff;
+}
+
+.exam-modal-btn.primary:hover {
+    background-color: #5a8ab8;
+}
+
+.exam-modal-btn.secondary {
+    background-color: #555555;
+    color: #ffffff;
+}
+
+.exam-modal-btn.secondary:hover {
+    background-color: #666666;
+}
+
+.exam-question {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #1e2a3a;
+    border: 1px solid #4a7ab5;
+    border-radius: 4px;
+}
+
+.exam-question-number {
+    color: #FFD700;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.exam-question-text {
+    color: #ffffff;
+    margin-bottom: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.exam-option {
+    color: #aaa;
+    font-size: 13px;
+    margin-bottom: 3px;
+}
+
+.exam-option span {
+    color: #90EE90;
+    margin-right: 5px;
+}

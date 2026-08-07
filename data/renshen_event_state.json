@@ -1,0 +1,8 @@
+{
+    "event_active": false,
+    "event_started_at": 0,
+    "trigger_char_id": null,
+    "current_phase": "idle",
+    "fruit_distributed": false,
+    "event_ended_at": 1781100544
+}
