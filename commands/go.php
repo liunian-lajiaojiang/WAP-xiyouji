@@ -448,7 +448,7 @@ function cmd_go(int $charId, string $direction = ''): array {
             return [
                 'success' => false,
                 'message' => HTML_HIYEL . "守门牛精伸臂拦住去路，粗声道：此乃内宫禁地，闲人不得入内！\n" .
-                             "守门牛精舔了舔嘴唇：除非……你有酥合香油？给俺一瓶就放你过去。" . HTML_NOR
+                             "守门牛精舔了舔嘴唇：除非……你有酥合香油？给俺一个油葫芦就放你过去。" . HTML_NOR
             ];
         }
     }

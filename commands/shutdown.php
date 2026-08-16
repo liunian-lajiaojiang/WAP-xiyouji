@@ -121,8 +121,10 @@ function cmd_shutdown(int $charId, string $param = ''): array {
             $fleeCount++;
         }
 
-        // 将玩家踢下线（设置在线状态为0）
+        // 将玩家踢下线（设置在线状态为0，并更新下线时间）
         CharacterModel::updateOnlineStatus($playerId, false);
+        // 更新 users.last_login 为当前时间，使管理后台"所有玩家列表"显示正确的离线时间
+        Database::execute("UPDATE users SET last_login = NOW() WHERE id = ?", [$player['user_id']]);
         $kickedCount++;
     }
 

@@ -1641,7 +1641,30 @@ class ActionRouter {
                 'message' => HTML_HIYEL . ($giveResult['message'] ?? '马盗收下了你的东西。') . HTML_NOR
             ];
         }
-        
+
+        // 守门牛精收油放行（青龙山玄英洞通道）
+        if (($npc['npc_id'] ?? '') === 'shoumenniujing' || ($npc['id'] ?? 0) == 1744) {
+            require_once HELPER_PATH . 'ShoumenniujingHelper.php';
+            $giveResult = ShoumenniujingHelper::handleGive($charId, $item);
+
+            if ($giveResult && !empty($giveResult['consume_item'])) {
+                $invId = $item['id'] ?? 0;
+                if ($invId > 0) {
+                    Database::execute("DELETE FROM character_inventory WHERE id = ?", [$invId]);
+                } else {
+                    Database::execute(
+                        "DELETE FROM character_inventory WHERE char_id = ? AND item_id = ? AND COALESCE(category, '') = ?",
+                        [$charId, $itemId, $item['category'] ?? '']
+                    );
+                }
+            }
+
+            return [
+                'success' => $giveResult['success'] ?? true,
+                'message' => HTML_HIYEL . ($giveResult['message'] ?? '守门牛精收下了你的东西。') . HTML_NOR
+            ];
+        }
+
         // 高员外接收物品（高翠兰任务 - 玉佩）
         if (($npc['npc_id'] ?? '') === 'gao' || ($npc['id'] ?? 0) == 206) {
             // 检查是否是玉佩
@@ -3394,8 +3417,9 @@ class ActionRouter {
     
     /**
      * 处理装水命令 (fill)
-     * 兼容两种语义：
+     * 兼容三种语义：
      *   - "fill sea" / "fill 海" / "fill 东海" 在海滩房间 → 填海（JingweiDaemon）
+     *   - 在金平府民居房间 → 灌酥合香油（油葫芦）
      *   - "fill <容器>" → 装水（food_water.php::cmd_fill）
      */
     private static function handleFill(int $charId, string $param, array $char): array {
@@ -3415,6 +3439,17 @@ class ActionRouter {
             ];
         }
 
+        // 金平府灌油分支：在民居房间且有油葫芦
+        $jinpingOilRooms = [
+            'qujing/jinping/minju1',
+            'qujing/jinping/minju2',
+            'qujing/jinping/minju3',
+            'qujing/jinping/minju4',
+        ];
+        if (in_array($charRoom, $jinpingOilRooms, true)) {
+            return self::handleJinpingFillOil($charId, $char);
+        }
+
         if (!function_exists('cmd_fill')) {
             require_once __DIR__ . '/../commands/food_water.php';
         }
@@ -3422,12 +3457,107 @@ class ActionRouter {
     }
 
     /**
+     * 金平府灌油逻辑
+     * 参考 xyj2000/d/qujing/jinping/obj/hulu.c do_fill()
+     * 在民居油罐灌满油葫芦，油罐耗尽后10分钟再生
+     */
+    private static function handleJinpingFillOil(int $charId, array $char): array {
+        require_once MODEL_PATH . 'Item.php';
+        require_once DAEMON_PATH . 'MessageDaemon.php';
+
+        $roomId = ($char['current_room'] ?? '');
+        if (strpos($roomId, '/') === false) {
+            $roomId = ($char['current_area'] ?? '') . '/' . $roomId;
+        }
+
+        // 查找玩家背包中的油葫芦/油瓶
+        // items表有三种油容器: hulu(油葫芦,qujing)、youhulu(油葫芦,food)、youping(油瓶,city/obj)
+        $inventory = ItemModel::getCharacterItems($charId);
+        $hulu = null;
+        foreach ($inventory as $item) {
+            $iid = $item['item_id'] ?? '';
+            $iname = $item['name'] ?? '';
+            if ($iid === 'hulu' || $iid === 'youhulu' || $iid === 'youping' ||
+                $iname === '油葫芦' || $iname === '油瓶') {
+                $hulu = $item;
+                break;
+            }
+        }
+        if (!$hulu) {
+            return ['success' => false, 'message' => '你身上没有油葫芦。'];
+        }
+
+        // 检查容器是否已装有油
+        $liquidRemaining = intval($hulu['liquid_remaining'] ?? 0);
+        if ($liquidRemaining > 0) {
+            return ['success' => false, 'message' => '容器里已装有酥合香油了。'];
+        }
+
+        // 检查房间油罐是否有油（通过room_states追踪）
+        $oilRegenSeconds = 600;
+        $row = Database::queryOne(
+            "SELECT value FROM room_states WHERE room_path = ? AND state_key = 'oil_taken_at'",
+            [$roomId]
+        );
+        if ($row) {
+            $takenAt = intval($row['value']);
+            if ((time() - $takenAt) < $oilRegenSeconds) {
+                return ['success' => false, 'message' => '罐子里已没有酥合香油了。'];
+            }
+        }
+
+        // 灌满油葫芦
+        $invId = $hulu['id'] ?? 0;
+        $huluName = $hulu['name'] ?? '油葫芦';
+        if ($invId > 0) {
+            Database::execute(
+                "UPDATE character_inventory SET liquid_remaining = 10, liquid_type = 'oil', liquid_name = '酥合香油' WHERE id = ?",
+                [$invId]
+            );
+        } else {
+            $huluItemId = $hulu['item_id'] ?? 'hulu';
+            $huluCat = $hulu['category'] ?? 'qujing';
+            Database::execute(
+                "UPDATE character_inventory SET liquid_remaining = 10, liquid_type = 'oil', liquid_name = '酥合香油'
+                 WHERE char_id = ? AND item_id = ? AND COALESCE(category, '') = ?",
+                [$charId, $huluItemId, $huluCat]
+            );
+        }
+
+        // 标记房间油罐已耗尽
+        Database::execute(
+            "INSERT INTO room_states (room_path, state_key, value, created_at, updated_at)
+             VALUES (?, 'oil_taken_at', ?, NOW(), NOW())
+             ON DUPLICATE KEY UPDATE value = VALUES(value), updated_at = NOW()",
+            [$roomId, strval(time())]
+        );
+
+        $msg = '<span style="color:#FFD700;">你将' . $huluName . '灌满酥合香油。</span>';
+
+        MessageDaemon::broadcastToRoom($roomId,
+            '<span style="color:#FFD700;">' . $char['name'] . '将' . $huluName . '灌满酥合香油。</span>',
+            $charId, 'room');
+
+        return ['success' => true, 'message' => $msg];
+    }
+
+    /**
      * 处理倒掉命令 (pour)
-     * 兼容两种语义：
+     * 兼容三种语义：
+     *   - 在金灯桥房间 → 将酥合香油倒入金灯缸（金平府任务）
      *   - "pour <容器>"         → 倒空液体容器（food_water.php::cmd_pour）
      *   - "pour <药> in <容器>" → 把迷魂散倒入液体容器（toy.php::cmd_poison_pour，还原 LPC 原版）
      */
     private static function handlePour(int $charId, string $param, array $char): array {
+        // 金平府倒油分支：在金灯桥房间
+        $charRoom = ($char['current_room'] ?? '');
+        if (strpos($charRoom, '/') === false) {
+            $charRoom = ($char['current_area'] ?? '') . '/' . $charRoom;
+        }
+        if ($charRoom === 'qujing/jinping/qiao') {
+            return self::handleJinpingPourOil($charId, $char);
+        }
+
         if (strpos($param, ' in ') !== false) {
             if (!function_exists('cmd_poison_pour')) {
                 require_once __DIR__ . '/../commands/toy.php';
@@ -3439,6 +3569,207 @@ class ActionRouter {
             require_once __DIR__ . '/../commands/food_water.php';
         }
         return cmd_pour($charId, $param);
+    }
+
+    /**
+     * 金平府倒油逻辑
+     * 参考 xyj2000/d/qujing/jinping/obj/hulu.c do_pour() + coming()
+     * 将油葫芦中的酥合香油倒入金灯缸，达到所需次数后佛爷出现
+     */
+    private static function handleJinpingPourOil(int $charId, array $char): array {
+        require_once MODEL_PATH . 'Item.php';
+        require_once DAEMON_PATH . 'MessageDaemon.php';
+
+        $roomId = 'qujing/jinping/qiao';
+
+        // 查找玩家背包中的油葫芦/油瓶
+        // items表有三种油容器: hulu(油葫芦,qujing)、youhulu(油葫芦,food)、youping(油瓶,city/obj)
+        $inventory = ItemModel::getCharacterItems($charId);
+        $hulu = null;
+        foreach ($inventory as $item) {
+            $iid = $item['item_id'] ?? '';
+            $iname = $item['name'] ?? '';
+            if ($iid === 'hulu' || $iid === 'youhulu' || $iid === 'youping' ||
+                $iname === '油葫芦' || $iname === '油瓶') {
+                $hulu = $item;
+                break;
+            }
+        }
+        if (!$hulu) {
+            return ['success' => false, 'message' => '你身上没有油葫芦。'];
+        }
+
+        // 检查容器是否有油
+        $huluName = $hulu['name'] ?? '油葫芦';
+        $liquidRemaining = intval($hulu['liquid_remaining'] ?? 0);
+        $liquidType = trim($hulu['liquid_type'] ?? '');
+        $liquidName = trim($hulu['liquid_name'] ?? '');
+        if ($liquidRemaining <= 0) {
+            return ['success' => false, 'message' => $huluName . '里没有油。'];
+        }
+        if ($liquidType !== 'oil' && $liquidName !== '酥合香油') {
+            return ['success' => false, 'message' => $huluName . '里装的不是酥合香油。'];
+        }
+
+        // 倒空油容器
+        $invId = $hulu['id'] ?? 0;
+        if ($invId > 0) {
+            Database::execute(
+                "UPDATE character_inventory SET liquid_remaining = 0, liquid_type = '', liquid_name = '' WHERE id = ?",
+                [$invId]
+            );
+        } else {
+            $huluItemId = $hulu['item_id'] ?? 'hulu';
+            $huluCat = $hulu['category'] ?? 'qujing';
+            Database::execute(
+                "UPDATE character_inventory SET liquid_remaining = 0, liquid_type = '', liquid_name = ''
+                 WHERE char_id = ? AND item_id = ? AND COALESCE(category, '') = ?",
+                [$charId, $huluItemId, $huluCat]
+            );
+        }
+
+        // 增加倒油计数
+        $oilCount = self::getJinpingOilCount($charId);
+        $oilCount++;
+        self::setJinpingOilCount($charId, $oilCount);
+
+        $msg = '<span style="color:#FFD700;">你将' . $huluName . '里的酥合香油倒进金灯缸。</span>';
+
+        MessageDaemon::broadcastToRoom($roomId,
+            '<span style="color:#FFD700;">' . $char['name'] . '将' . $huluName . '里的酥合香油倒进金灯缸。</span>',
+            $charId, 'room');
+
+        // 计算还需要倒多少次
+        $kar = intval($char['kar'] ?? 10);
+        $required = 40 - $kar;
+        if ($required < 10) {
+            $required = 10;
+        }
+        $remaining = $required - $oilCount;
+
+        if ($remaining > 0) {
+            $msg .= "\n" . '<span style="color:#87CEEB;">灯官告诉你：再倒' . self::chineseNumber($remaining) . '次便可。</span>';
+            return ['success' => true, 'message' => $msg];
+        }
+
+        // 倒油次数足够，佛爷出现！
+        $msg .= "\n" . '<span style="color:#FF00FF;">灯官告诉你：佛爷要来了！</span>';
+        $foyeMsg = self::triggerJinpingFoyeEvent($charId, $char, $roomId, $hulu);
+        $msg .= "\n" . $foyeMsg;
+
+        return ['success' => true, 'message' => $msg];
+    }
+
+    /**
+     * 触发金平府佛爷出现事件
+     * 参考 xyj2000/d/qujing/jinping/obj/hulu.c coming()
+     */
+    private static function triggerJinpingFoyeEvent(int $charId, array $char, string $currentRoom, array $hulu): string {
+        $messages = [];
+        $huluInvId = $hulu['id'] ?? 0;
+
+        // 1. 佛爷出现
+        $messages[] = '<span style="color:#FF00FF;">一阵狂风吹来，佛爷出现！</span>';
+        MessageDaemon::broadcastToRoom($currentRoom,
+            '<span style="color:#FF00FF;">一阵狂风吹来，佛爷出现！</span>',
+            $charId, 'room');
+
+        // 2. 搜走非绑定物品
+        $inventory = ItemModel::getCharacterItems($charId);
+        foreach ($inventory as $item) {
+            $invId = $item['id'] ?? 0;
+            if ($invId > 0 && $invId == $huluInvId) {
+                continue;
+            }
+
+            $itemInfo = Database::queryOne(
+                "SELECT no_drop, no_sell FROM items WHERE item_id = ? AND category = ? LIMIT 1",
+                [$item['item_id'] ?? '', $item['category'] ?? '']
+            );
+            $noDrop = intval($itemInfo['no_drop'] ?? 0);
+            $noSell = intval($itemInfo['no_sell'] ?? 0);
+            $equipped = intval($item['equipped'] ?? 0);
+            if ($noDrop || $noSell || $equipped) {
+                continue;
+            }
+
+            $itemName = $item['name'] ?? $item['item_id'] ?? '物品';
+            $messages[] = '<span style="color:#FFD700;">佛爷从' . $char['name'] . '身上搜出' . $itemName . '！</span>';
+            if ($invId > 0) {
+                Database::execute("DELETE FROM character_inventory WHERE id = ?", [$invId]);
+            }
+        }
+
+        // 3. 佛爷携着玩家飞上天空
+        $messages[] = '<span style="color:#FF00FF;">佛爷携着' . $char['name'] . '飞上天空！</span>';
+        MessageDaemon::broadcastToRoom($currentRoom,
+            '<span style="color:#FF00FF;">佛爷携着' . $char['name'] . '飞上天空！</span>',
+            $charId, 'room');
+
+        // 4. 传送到青龙山山头
+        $targetRoom = 'qujing/qinglong/shantou';
+        Database::execute(
+            "UPDATE characters SET current_room = ?, current_area = 'qujing' WHERE id = ?",
+            [$targetRoom, $charId]
+        );
+
+        // 5. 打昏玩家
+        $con = intval($char['con'] ?? 10);
+        $duration = random_int(30, max(30, 120 - $con * 2));
+        $endTime = time() + $duration;
+        Database::execute(
+            'UPDATE characters SET unconscious_state = 1, unconscious_end_time = ?, kee = 0, gin = 0, sen = 0 WHERE id = ?',
+            [$endTime, $charId]
+        );
+        $_SESSION["unconscious_{$charId}"] = [
+            'timestamp' => time(),
+            'duration' => $duration,
+        ];
+
+        $messages[] = '<span style="color:#FF00FF;">佛爷突然停下来，顺便将' . $char['name'] . '往地上一扔！</span>';
+        MessageDaemon::broadcastToRoom($targetRoom,
+            '<span style="color:#FF00FF;">佛爷携着' . $char['name'] . '从天而降，将其往地上一扔！</span>',
+            $charId, 'room');
+
+        return implode("\n", $messages);
+    }
+
+    /**
+     * 获取玩家金平府倒油计数
+     */
+    private static function getJinpingOilCount(int $charId): int {
+        $row = Database::queryOne(
+            "SELECT state_value FROM character_temp_states WHERE char_id = ? AND state_key = 'obstacle/jinping_oil'",
+            [$charId]
+        );
+        return $row ? intval($row['state_value']) : 0;
+    }
+
+    /**
+     * 设置玩家金平府倒油计数
+     */
+    private static function setJinpingOilCount(int $charId, int $count): void {
+        Database::execute(
+            'INSERT INTO character_temp_states (char_id, state_key, state_value, created_at, updated_at)
+             VALUES (?, ?, ?, NOW(), NOW())
+             ON DUPLICATE KEY UPDATE state_value = VALUES(state_value), updated_at = NOW()',
+            [$charId, 'obstacle/jinping_oil', strval($count)]
+        );
+    }
+
+    /**
+     * 中文数字（简单版）
+     */
+    private static function chineseNumber(int $n): string {
+        $digits = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+        if ($n < 10) return $digits[$n];
+        if ($n < 20) return '十' . ($n % 10 > 0 ? $digits[$n % 10] : '');
+        if ($n < 100) {
+            $tens = intval($n / 10);
+            $ones = $n % 10;
+            return $digits[$tens] . '十' . ($ones > 0 ? $digits[$ones] : '');
+        }
+        return strval($n);
     }
     
     /**

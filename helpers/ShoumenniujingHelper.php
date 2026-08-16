@@ -2,10 +2,11 @@
 /**
  * 守门牛精(shoumenniujing) 助手类
  * 参考 xyj2000-php 重构，xyj、xyj2000、xyj2000-php 是三个完全独立的项目，xyj 不能引用另外两个项目的文件
- * 
+ *
  * 负责：
- * - 玩家给予装满油的油瓶时收下并放行
+ * - 玩家给予装满酥合香油的油葫芦时收下并放行
  * - 玩家试图通过青龙山玄英洞通道时的拦路检查
+ * 对照原始 LPC: xyj2000/d/qujing/qinglong/npc/xiniu.c accept_object()
  */
 
 require_once __DIR__ . '/../includes/db.php';
@@ -19,7 +20,8 @@ class ShoumenniujingHelper {
     const HAS_PAID_KEY = 'niujing_has_paid'; // 已给油放行
     
     /**
-     * 处理玩家给予油瓶
+     * 处理玩家给予油葫芦
+     * 对照原始 LPC: xiniu.c accept_object() - 检查物品名称是否为"油葫芦"，且有油
      * @param int $charId 角色ID
      * @param array $item 物品数据
      * @return array|null ['success' => bool, 'message' => string, 'consume_item' => bool]
@@ -27,75 +29,53 @@ class ShoumenniujingHelper {
     public static function handleGive(int $charId, array $item): ?array {
         $itemId = $item['item_id'] ?? '';
         $itemName = $item['item_name'] ?? $item['name'] ?? '';
-        
-        // 检查是否是油瓶
-        if ($itemId !== 'youping') {
-            // 不是油瓶，不收
+
+        // 检查是否是油葫芦/油瓶（对照LPC原版: ob->query("name") != "油葫芦"）
+        // items表有三种油容器: hulu(油葫芦,qujing)、youhulu(油葫芦,food)、youping(油瓶,city/obj)
+        $isHulu = ($itemName === '油葫芦' ||
+                   $itemName === '油瓶' ||
+                   $itemId === 'hulu' ||
+                   $itemId === 'youhulu' ||
+                   $itemId === 'youping');
+
+        if (!$isHulu) {
+            // 不是油葫芦/油瓶，不收
             return [
                 'success' => false,
-                'message' => self::NPC_NAME . "不耐烦地挥挥手：俺只要油瓶，别的东西不要！",
+                'message' => self::NPC_NAME . "摇了摇头说：俺不要你的" . $itemName . "。",
                 'consume_item' => false
             ];
         }
-        
-        // 严格检查油瓶是否装有油
-        // 必须同时满足：liquid_remaining > 0 且 liquid_type 明确是油（不能是水、酒等）
+
+        // 检查油葫芦是否装有酥合香油（对照LPC原版: ob->query("liquid/remaining") == 0）
         $liquidRemaining = intval($item['liquid_remaining'] ?? 0);
         $liquidType = trim($item['liquid_type'] ?? '');
-        
-        // 明确的非油类型黑名单
-        $nonOilTypes = ['water', 'wine', 'alcohol', 'horse_urine', 'tea', 'soup', 'juice'];
-        
+        $liquidName = trim($item['liquid_name'] ?? '');
+
         if ($liquidRemaining <= 0) {
-            // 空的，拒绝
+            // 空的，拒绝（对照LPC: "油葫芦是空的。"）
             return [
                 'success' => false,
-                'message' => self::NPC_NAME . "接过油瓶晃了晃，怒道：空的？你耍俺老牛呢？！",
+                'message' => self::NPC_NAME . "摇了摇头说：这" . $itemName . "是空的。",
                 'consume_item' => false
             ];
         }
-        
-        if (empty($liquidType)) {
-            // liquid_type 为空，无法判断是什么液体，拒绝
+
+        // 检查液体是否是酥合香油
+        $isSuhuOil = ($liquidType === 'oil' ||
+                      mb_stripos($liquidName, '酥合') !== false ||
+                      mb_stripos($liquidName, '香油') !== false ||
+                      mb_stripos($liquidType, '油') !== false);
+
+        if (!$isSuhuOil) {
             return [
                 'success' => false,
-                'message' => self::NPC_NAME . "接过油瓶闻了闻，疑惑道：这瓶子里装的啥？俺可只要酥合香油！",
+                'message' => self::NPC_NAME . "闻了闻，皱眉道：这不是酥合香油，俺不要！",
                 'consume_item' => false
             ];
         }
-        
-        // 检查是否是水、酒等非油液体
-        if (in_array(strtolower($liquidType), $nonOilTypes)) {
-            $typeNames = [
-                'water' => '水',
-                'wine' => '酒',
-                'alcohol' => '酒',
-                'horse_urine' => '马尿',
-                'tea' => '茶',
-                'soup' => '汤',
-                'juice' => '果汁',
-            ];
-            $name = $typeNames[strtolower($liquidType)] ?? $liquidType;
-            return [
-                'success' => false,
-                'message' => self::NPC_NAME . "接过油瓶闻了闻，怒道：这分明是{$name}！俺要的是酥合香油，不是{$name}！",
-                'consume_item' => false
-            ];
-        }
-        
-        // 检查是否明确是油：liquid_type 必须等于 'oil' 或包含"油"字
-        $isOil = ($liquidType === 'oil' || mb_stripos($liquidType, '油') !== false);
-        
-        if (!$isOil) {
-            // liquid_type 无法识别为油，拒绝
-            return [
-                'success' => false,
-                'message' => self::NPC_NAME . "接过油瓶闻了闻，皱眉道：这是酥合香油吗？俺怎么闻着不太对劲……",
-                'consume_item' => false
-            ];
-        }
-        
-        // 收下油瓶，消耗物品
+
+        // 收下油葫芦，消耗物品（对照LPC: call_out("destruct_me",1,ob)）
         $invId = $item['id'] ?? 0;
         if ($invId > 0) {
             Database::execute("DELETE FROM character_inventory WHERE id = ?", [$invId]);
@@ -105,13 +85,13 @@ class ShoumenniujingHelper {
                 [$charId, $itemId, $item['category'] ?? '']
             );
         }
-        
-        // 设置放行状态
+
+        // 设置放行状态（对照LPC: who->set_temp("obstacle/jinping_give_hulu",1)）
         self::setTempState($charId, self::HAS_PAID_KEY, '1', time() + 86400); // 24小时有效
-        
+
         return [
             'success' => true,
-            'message' => self::NPC_NAME . "接过油瓶，凑到鼻边闻了闻，满意地点点头：嗯，好油！好油！\n" .
+            'message' => self::NPC_NAME . "说了声：谢谢。\n" .
                          self::NPC_NAME . "侧身让开道路：进去吧，别惹事！",
             'consume_item' => true
         ];

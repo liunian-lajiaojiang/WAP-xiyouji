@@ -4734,7 +4734,23 @@ class CombatDaemon {
             // 金角/银角大王的法宝已由 PingdingHandler 单独处理掉落
             log_game('PINGDING_BOSS', "平顶山Boss {$npcName} (ID: {$npcId}) 被{$killerName}击杀");
         }
-        
+
+        // === 特殊处理：金平府青龙山三大王死亡事件 ===
+        // 参考 xyj2000/d/qujing/qinglong/npc/pi1.c, pi2.c, pi3.c die()
+        // 辟寒大王 → 辟暑大王 → 辟尘大王 → 全部击杀后府令验证
+        $isJinpingBoss = (
+            ($npcIdVal === 'pihandawang') ||
+            ($npcIdVal === 'pishudawang') ||
+            ($npcIdVal === 'pichendawang')
+        );
+
+        if ($isJinpingBoss && $killerId) {
+            require_once DAEMON_PATH . 'JinpingHandler.php';
+            JinpingHandler::handleBossDeath($npcId, $npc, $killerId, $killerName, $roomId);
+            // 继续执行普通死亡流程（创建尸体、掉落物品等）
+            log_game('JINPING_BOSS', "金平府Boss {$npcName} (ID: {$npcId}) 被{$killerName}击杀");
+        }
+
         // 1. 创建尸体
         $corpseId = Corpse::createNpcCorpse(
             $npcId,

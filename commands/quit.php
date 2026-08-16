@@ -9,8 +9,9 @@ function cmd_quit(int $charId, string $param = ''): array {
         return ['success' => false, 'message' => '角色不存在'];
     }
     
-    // 更新在线状态
+    // 更新在线状态和下线时间
     CharacterModel::updateOnlineStatus($charId, false);
+    Database::execute("UPDATE users SET last_login = NOW() WHERE id = ?", [$char['user_id']]);
     
     log_game('QUIT', "{$char['name']} 退出游戏");
     
