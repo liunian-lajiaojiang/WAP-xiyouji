@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_save_path(__DIR__ . '/../sessions');
 session_start();
 
@@ -327,20 +327,11 @@ if ($page == 1) {
     <meta name="keywords" content="西游记mud,西游记怀旧mud，西游记h5" />
     <meta name="description" content="西游记mud是源自Mud西游记2000的经典还原H5网页文字游戏。" />
     <link rel="shortcut icon" href="../assets/images/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="../assets/css/dark-theme.css">
+    <link rel="stylesheet" href="../assets/css/light-theme.css">
+    <script src="../assets/js/theme-init.js"></script>
     <link rel="stylesheet" href="../assets/css/footer.css">
     <title>飞行_西游记mud</title>
     <style>
-        #shibing {
-            font-size: 16px;
-            color: #F00;
-            font-weight: 900;
-        }
-
-        #demo {
-            color: rgba(255, 114, 0, 1.00)
-        }
-        
         .disabled {
             color: gray;
             pointer-events: none;
@@ -371,7 +362,7 @@ if ($page == 1) {
                     <?php if (isset($dest['room_id']) && !empty($dest['room_id'])): ?>
                         <a href="javascript:void(0);" onclick="document.getElementById('selectedDestination').value='<?= h($dest['room_id']) ?>'; document.getElementById('flyForm').submit();">【<?= h($dest['name']) ?>】</a>
                     <?php else: ?>
-                        <span style="color: white;">【<?= h($dest['name']) ?>】</span>
+                        <span class="gray">【<?= h($dest['name']) ?>】</span>
                     <?php endif; ?>
                 </td>
                 <?php endforeach; ?>
